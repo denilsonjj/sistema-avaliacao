@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@300;400;600;700&display=swap');
+
+:root {
+  --color-primary: #243782;
+  --color-text-on-primary: #ffffff;
+  --color-background: #f4f7f6;
+  --color-surface: #ffffff;
+  --color-text: #282b34;
+  --color-border: #dce1e6;
+}
+
+body {
+  margin: 0;
+  font-family: 'Encode Sans Expanded', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
