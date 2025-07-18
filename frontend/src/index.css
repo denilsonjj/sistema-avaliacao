@@ -1,12 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@300;400;600;700&display=swap');
+/* Importa a fonte do Google Fonts com todos os pesos definidos no guia */
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
+  /* Cores Principais */
   --color-primary: #243782;
   --color-text-on-primary: #ffffff;
-  --color-background: #f4f7f6;
-  --color-surface: #ffffff;
-  --color-text: #282b34;
-  --color-border: #dce1e6;
+  
+  /* Cores de Texto e Fundo */
+  --color-background: #f4f7f6; /* Um cinza claro para o fundo geral */
+  --color-surface: #ffffff; /* Branco para superfícies como cards e inputs */
+  --color-text: #282b34; /* Antracite como cor de texto principal */
+  --color-border: #dce1e6; /* Cor para bordas sutis */
+
+  /* Cores Secundárias (do guia de identidade) */
+  --color-tangerine: #ec94a2;
+  --color-tangerine-light: #f39671;
+  --color-tangerine-dark: #e42313;
+
+  --color-mint: #43aaa0;
+  --color-mint-light: #a0d4cd;
+  --color-mint-dark: #006a6a;
+
+  --color-orange: #eca935;
+  --color-orange-light: #ffcd50;
+  --color-orange-dark: #ef7800;
+
+  --color-anthracite: #282b34;
 }
 
 body {
@@ -14,4 +33,6 @@ body {
   font-family: 'Encode Sans Expanded', sans-serif;
   background-color: var(--color-background);
   color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

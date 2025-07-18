@@ -1,16 +1,13 @@
+// frontend/src/pages/DashboardPage.jsx
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+// O useAuth e o botão de logout não são mais necessários aqui
 
 function DashboardPage() {
-  const { logout } = useAuth();
-
   return (
-    <div style={{ padding: '50px' }}>
+    <div>
       <h1>Dashboard</h1>
-      <p>Login realizado com sucesso!</p>
-      <button onClick={logout} style={{ padding: '10px 20px', color: 'white', backgroundColor: 'red', border: 'none', borderRadius: '4px' }}>
-        Sair
-      </button>
+      <p>Seja bem-vindo ao Sistema de Avaliação!</p>
+      {/* O conteúdo específico de cada dashboard virá aqui */}
     </div>
   );
 }

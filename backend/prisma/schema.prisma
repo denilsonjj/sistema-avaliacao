@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,19 +10,74 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+// Enum para os perfis de usuário
 enum Role {
-  PMM
-  LIDER
-  TECNICO
-  ESTAGIARIO
+  PMM       // Profissional de Manutenção e Melhoria
+  LIDER     // Líderes de equipe
+  PMS       // Profissional de Manutenção de Sistemas
+  TECNICO   // Técnicos
+  ESTAGIARIO // Estagiários
 }
 
 model User {
+  id                  String           @id @default(cuid())
+  email               String           @unique
+  name                String
+  password            String
+  role                Role             @default(TECNICO)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  
+  // Relações
+  evaluations         Evaluation[]
+  selfAssessments     SelfAssessment[]
+  receivedFeedbacks   Feedback[]       @relation("RecipientFeedbacks")
+  authoredFeedbacks   Feedback[]       @relation("AuthorFeedbacks")
+}
+
+model Evaluation {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String
-  role      Role     @default(TECNICO)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  technicalKnowledge       String
+  certifications           String
+  experienceTime           String
+  serviceQuality           String
+  executionTimeframe       String
+  problemSolvingInitiative String
+  teamwork                 String
+  commitment               String
+  proactivity              String
+  availability             Float
+  performance              Float
+  quality                  Float
+}
+
+model SelfAssessment {
+  id                  String   @id @default(cuid())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  strengths           String
+  improvementPoints   String
+  professionalGoals   String
+}
+
+model Feedback {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  content     String
+
+  recipient   User   @relation("RecipientFeedbacks", fields: [recipientId], references: [id])
+  recipientId String
+
+  author   User   @relation("AuthorFeedbacks", fields: [authorId], references: [id])
+  authorId String
 }

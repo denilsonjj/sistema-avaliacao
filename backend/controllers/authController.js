@@ -43,6 +43,7 @@ exports.login = async (req, res) => {
   }
 };
 
+
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
@@ -51,5 +52,42 @@ exports.getAllUsers = async (req, res) => {
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar usuários.' });
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: id },
+      select: { id: true, name: true, email: true, role: true },
+    });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar usuário.' });
+  }
+};
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Transação para deletar o usuário e todos os seus registros relacionados
+    const deleteTransactions = [
+      prisma.feedback.deleteMany({ where: { OR: [{ recipientId: id }, { authorId: id }] } }),
+      prisma.selfAssessment.deleteMany({ where: { userId: id } }),
+      prisma.evaluation.deleteMany({ where: { userId: id } }),
+      prisma.user.delete({ where: { id: id } }),
+    ];
+
+    await prisma.$transaction(deleteTransactions);
+
+    res.status(204).send();
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+    res.status(500).json({ message: 'Erro ao excluir usuário.', error: error.message });
   }
 };

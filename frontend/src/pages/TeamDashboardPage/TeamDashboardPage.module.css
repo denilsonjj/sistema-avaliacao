@@ -1,0 +1,47 @@
+/* frontend/src/pages/TeamDashboardPage/TeamDashboardPage.module.css */
+.container h1 {
+    color: var(--color-primary);
+  }
+  
+  .error {
+    color: var(--color-tangerine-dark);
+    font-weight: 600;
+  }
+  
+  .teamTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  
+  .teamTable th,
+  .teamTable td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .teamTable th {
+    font-weight: 700;
+  }
+  
+  .teamTable tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .actionButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-block;
+    text-decoration: none
+  }
+  
+  .actionButton:hover {
+    background-color: #314cb5;
+  }

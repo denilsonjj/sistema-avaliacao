@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
+import api from '../services/api'; // <<< CORREÇÃO AQUI
 import { useAuth } from '../context/AuthContext';
-import styles from './LoginPage.module.css'; // Importa o nosso CSS
+import styles from './LoginPage.module.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ function LoginPage() {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', {
+      const response = await api.post('/auth/login', {
         email,
         password,
       });
@@ -49,6 +50,9 @@ function LoginPage() {
             Entrar
           </button>
         </form>
+        <p className={styles.registerLink}>
+          Não tem uma conta? <Link to="/cadastro">Cadastre-se</Link>
+        </p>
       </div>
     </div>
   );

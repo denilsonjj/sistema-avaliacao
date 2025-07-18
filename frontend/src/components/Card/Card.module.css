@@ -1,0 +1,20 @@
+.card {
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border);
+    overflow: hidden; /* Garante que o conteúdo respeite o border-radius */
+  }
+  
+  .cardTitle {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--color-border);
+    margin: 0;
+  }
+  
+  .cardContent {
+    padding: 1.5rem;
+  }

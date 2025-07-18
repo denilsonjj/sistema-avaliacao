@@ -1,0 +1,108 @@
+/* frontend/src/pages/UserManagementPage/UserManagementPage.module.css */
+.container h1 {
+    color: var(--color-primary);
+  }
+  
+  .error {
+    color: var(--color-tangerine-dark);
+    font-weight: 600;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .formGroup label {
+    font-weight: 600;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    font-family: inherit;
+  }
+  
+  .formMessageError {
+    color: var(--color-tangerine-dark);
+    text-align: center;
+    margin: 1rem 0 0 0;
+  }
+  
+  .formMessageSuccess {
+    color: var(--color-mint-dark);
+    text-align: center;
+    margin: 1rem 0 0 0;
+  }
+  
+  .submitButton {
+    margin-top: 1.5rem;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 700;
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .submitButton:disabled {
+    background-color: #a0a0a0;
+  }
+  
+  .userList {
+    margin-top: 2rem;
+  }
+  
+  .userTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  
+  .userTable th,
+  .userTable td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .userTable th {
+    font-weight: 700;
+  }
+  
+  .userTable tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .userTable th,
+.userTable td {
+  /* ... */
+  vertical-align: middle; /* alinhar botão nc vertical*/
+}
+
+.deleteButton {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background-color: #d93025;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+}

@@ -1,0 +1,19 @@
+.error {
+    color: var(--color-tangerine-dark);
+    font-weight: 600;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .grid p {
+    margin: 0.5rem 0;
+  }
+  
+  .grid strong {
+    color: var(--color-primary);
+  }

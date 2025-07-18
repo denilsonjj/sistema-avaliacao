@@ -1,0 +1,33 @@
+/* frontend/src/components/Header/Header.module.css */
+.header {
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-primary);
+  }
+  
+  .headerTitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  
+  .logoutButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: var(--color-tangerine-dark);
+    color: var(--color-text-on-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+  }
+  
+  .logoutButton:hover {
+    background-color: #c91c0f; /* Um tom mais escuro de vermelho */
+  }
