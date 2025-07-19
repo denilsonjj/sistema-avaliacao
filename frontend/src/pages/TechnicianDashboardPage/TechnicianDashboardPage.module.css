@@ -1,0 +1,45 @@
+/* frontend/src/pages/TechnicianDashboardPage/TechnicianDashboardPage.module.css */
+.container h1 {
+  color: var(--color-primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.evaluationSummary p {
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.detailsLink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.goalsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.goalItem {
+  padding: 0.8rem;
+  background-color: var(--color-background);
+  border-left: 3px solid var(--color-tangerine);
+  border-radius: 4px;
+  font-weight: 600;
+}

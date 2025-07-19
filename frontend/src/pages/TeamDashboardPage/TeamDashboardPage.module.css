@@ -45,3 +45,48 @@
   .actionButton:hover {
     background-color: #314cb5;
   }
+  /* Adicione este código no final do arquivo TeamDashboardPage.module.css */
+
+@media (max-width: 768px) {
+  /* Esconde o cabeçalho da tabela no mobile */
+  .teamTable thead {
+    display: none;
+  }
+
+  /* Faz com que cada linha da tabela se comporte como um "card" */
+  .teamTable tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background-color: var(--color-surface);
+  }
+
+  /* Faz com que cada célula ocupe a largura toda */
+  .teamTable td {
+    display: block;
+    text-align: right; /* Alinha o conteúdo à direita */
+    padding-left: 50%; /* Cria espaço à esquerda para o rótulo */
+    position: relative;
+    border-bottom: 1px dashed var(--color-border);
+     overflow-wrap: break-word;
+  }
+  
+  .teamTable td:last-child {
+    border-bottom: none; /* Remove a linha do último item */
+  }
+
+  /* Adiciona o rótulo (ex: "Nome:") antes de cada célula */
+  .teamTable td::before {
+    content: attr(data-label); /* Pega o texto do atributo 'data-label' */
+    position: absolute;
+    left: 1rem;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+  }
+}

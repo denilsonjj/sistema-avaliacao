@@ -1,0 +1,80 @@
+.formCard {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.formCard form {
+    display: flex;
+    gap: 1rem;
+}
+
+.formCard input {
+    flex-grow: 1;
+    border: 1px solid var(--color-border);
+    padding: 0.8rem;
+    border-radius: 4px;
+}
+
+.formCard button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.column h2 {
+    font-size: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--color-background);
+}
+
+.goalCard {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.goalCard p {
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.goalCard small {
+    color: #666;
+}
+
+.goalCard.completed p {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.actions {
+    margin-top: 1rem;
+}
+
+.actions button {
+    background: none;
+    border: 1px solid var(--color-border);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+/* Adicione no final do arquivo frontend/src/pages/GoalsPage/GoalsPage.module.css */
+@media (max-width: 768px) {
+  .board {
+    grid-template-columns: 1fr; /* Força uma única coluna */
+  }
+}

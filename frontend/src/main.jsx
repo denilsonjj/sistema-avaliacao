@@ -16,7 +16,9 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import SelfAssessmentPage from './pages/SelfAssessmentPage/SelfAssessmentPage';
 import FeedbackBoardPage from './pages/FeedbackBoardPage/FeedbackBoardPage';
 import RegisterPage from './pages/RegisterPage/RegisterPage.jsx';
-
+import GoalsPage from './pages/GoalsPage/GoalsPage'
+import ProfilePage from './pages/ProfilePage/ProfilePage.jsx';
+import ReportsPage from './pages/ReportsPage/ReportsPage';
 
 import './index.css';
 
@@ -71,6 +73,18 @@ const router = createBrowserRouter([
       {
         path: '/feedbacks',
         element: <ProtectedRoute><FeedbackBoardPage /></ProtectedRoute>,
+      },
+      {
+        path: '/metas',
+        element: <ProtectedRoute><GoalsPage /></ProtectedRoute>,
+      },
+      {
+        path: '/perfil',
+        element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
+      },
+       {
+        path: '/relatorios',
+        element: <ProtectedRoute><ReportsPage /></ProtectedRoute>,
       },
     ],
   },

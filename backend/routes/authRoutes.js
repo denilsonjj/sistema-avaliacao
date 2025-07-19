@@ -1,3 +1,4 @@
+// backend/routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
@@ -8,4 +9,6 @@ router.post('/login', authController.login);
 router.get('/users', authMiddleware, authController.getAllUsers);
 router.get('/users/:id', authMiddleware, authController.getUserById);
 router.delete('/users/:id', authMiddleware, authController.deleteUser);
+router.put('/profile', authMiddleware, authController.updateUserProfile);
+
 module.exports = router;

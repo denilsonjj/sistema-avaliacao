@@ -1,33 +1,83 @@
 /* frontend/src/components/Header/Header.module.css */
 .header {
-    grid-area: header;
-    display: flex;
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-primary);
+  position: relative;
+  z-index: 1000;
+}
+
+.menuButton {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.headerTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto; /* Empurra as ações para a direita */
+}
+
+.themeButton {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.themeButton:hover {
+  background-color: var(--color-background);
+}
+
+.logoutButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: var(--color-tangerine-dark);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: #c91c0f;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 1rem;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-    background-color: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    color: var(--color-primary);
   }
-  
+  .menuButton {
+    display: block;
+  }
   .headerTitle {
-    font-size: 1.2rem;
-    font-weight: 700;
+    flex-grow: 1;
+    text-align: center;
+    font-size: 1rem; /* Diminui um pouco para caber melhor */
   }
-  
-  .logoutButton {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    background-color: var(--color-tangerine-dark);
-    color: var(--color-text-on-primary);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: background-color 0.2s;
-  }
-  
-  .logoutButton:hover {
-    background-color: #c91c0f; /* Um tom mais escuro de vermelho */
-  }
+}

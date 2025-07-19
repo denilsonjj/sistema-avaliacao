@@ -3,14 +3,12 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import PmmDashboardPage from './PmmDashboardPage/PmmDashboardPage';
 import TeamDashboardPage from './TeamDashboardPage/TeamDashboardPage';
-import MyEvaluationsPage from './MyEvaluationsPage/MyEvaluationsPage';
-import DashboardPage from './DashboardPage'; // O dashboard genérico
+import TechnicianDashboardPage from './TechnicianDashboardPage/TechnicianDashboardPage'; // Importe o novo dashboard
 
 function DashboardRouter() {
   const { user } = useAuth();
 
   if (!user) {
-    // Isso não deve acontecer dentro de uma rota protegida, mas é uma segurança extra
     return <p>Carregando perfil...</p>;
   }
 
@@ -18,14 +16,15 @@ function DashboardRouter() {
     case 'PMM':
       return <PmmDashboardPage />;
     case 'LIDER':
+      case 'PMS':
       return <TeamDashboardPage />;
     case 'TECNICO':
-    case 'ESTAGIARIO': // Pode adicionar outros perfis para o mesmo dashboard
-    case 'PMS':
-      return <MyEvaluationsPage />;
+    case 'ESTAGIARIO':
+      // Agora, estes perfis verão o novo dashboard de técnico
+      return <TechnicianDashboardPage />;
     default:
-      // Um dashboard padrão para perfis não mapeados
-      return <DashboardPage />;
+      // Um fallback, caso um novo perfil seja criado e não mapeado
+      return <h1>Dashboard Padrão</h1>;
   }
 }
 

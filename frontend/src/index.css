@@ -36,3 +36,37 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+/* frontend/src/index.css */
+/* ... (import da fonte) ... */
+
+:root {
+  /* Tema Claro (Padrão) */
+  --color-primary: #243782;
+  --color-text-on-primary: #ffffff;
+  --color-background: #f4f7f6;
+  --color-surface: #ffffff;
+  --color-text: #282b34;
+  --color-border: #dce1e6;
+  /* ... (outras cores) ... */
+}
+
+/* Tema Escuro */
+body[data-theme='dark'] {
+  --color-primary: #5a7ec7; /* Um azul um pouco mais claro para contraste */
+  --color-text-on-primary: #ffffff;
+  --color-background: #121212;
+  --color-surface: #1e2129;
+  --color-text: #e1e1e1;
+  --color-border: #313642;
+}
+
+body {
+  margin: 0;
+  font-family: 'Encode Sans Expanded', sans-serif;
+  /* Transição suave de cores */
+  transition: background-color 0.3s, color 0.3s;
+
+  /* Aplica as variáveis */
+  background-color: var(--color-background);
+  color: var(--color-text);
+}

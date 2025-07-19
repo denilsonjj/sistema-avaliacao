@@ -54,10 +54,11 @@ function TeamDashboardPage() {
           <tbody>
             {users.map(user => (
               <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>
+                {/* Adicione o atributo data-label em cada <td> */}
+                <td data-label="Nome">{user.name}</td>
+                <td data-label="Email">{user.email}</td>
+                <td data-label="Perfil">{user.role}</td>
+                <td data-label="Ações">
                   <Link to={`/equipe/${user.id}`} className={styles.actionButton}>
                     Ver Avaliação
                   </Link>

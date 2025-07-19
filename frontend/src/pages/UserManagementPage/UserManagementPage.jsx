@@ -102,34 +102,36 @@ function UserManagementPage() {
       </Card>
 
       <div className={styles.userList}>
-        <Card title="Usuários Cadastrados">
-          <table className={styles.userTable}>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Email</th>
-                <th>Perfil</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(user => (
-                <tr key={user.id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>
-                <button onClick={() => handleDeleteUser(user.id)} className={styles.deleteButton}>
-                  Excluir
-                </button>
-              </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
-      </div>
-    </div>
-  );
+                <Card title="Usuários Cadastrados">
+                    <table className={styles.userTable}>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Perfil</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {users.map(user => (
+                                <tr key={user.id}>
+                                    {/* Adicione o atributo data-label em cada <td> */}
+                                    <td data-label="Nome">{user.name}</td>
+                                    <td data-label="Email">{user.email}</td>
+                                    <td data-label="Perfil">{user.role}</td>
+                                    <td data-label="Ações">
+                                        <button onClick={() => handleDeleteUser(user.id)} className={styles.deleteButton}>
+                                            Excluir
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </Card>
+            </div>
+        </div>
+    );
 }
 
 export default UserManagementPage;

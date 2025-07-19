@@ -91,3 +91,24 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Erro ao excluir usuário.', error: error.message });
   }
 };
+// ATUALIZAR O PERFIL DO PRÓPRIO USUÁRIO
+exports.updateUserProfile = async (req, res) => {
+  const { userId } = req.user; // Pega o ID do usuário logado a partir do token
+  const { name, technicalSkills, certifications } = req.body;
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        technicalSkills,
+        certifications,
+      },
+    });
+    // Remove a senha do objeto de resposta
+    const { password, ...userWithoutPassword } = updatedUser;
+    res.status(200).json(userWithoutPassword);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao atualizar o perfil.', error: error.message });
+  }
+};

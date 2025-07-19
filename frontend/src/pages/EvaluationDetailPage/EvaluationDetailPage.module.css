@@ -1,19 +1,175 @@
-.error {
-    color: var(--color-tangerine-dark);
-    font-weight: 600;
-  }
-  
+/* frontend/src/pages/EvaluationDetailPage/EvaluationDetailPage.module.css */
+.page {
+  animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.header h1 {
+  margin: 0;
+  color: var(--color-primary);
+}
+.userName {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text);
+}
+.actionButton {
+  text-decoration: none;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  font-weight: 700;
+}
+.actionButton.primary { background-color: var(--color-primary); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.oeeCard, .indicatorCard {
+  background: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--color-border);
+}
+
+.oeeCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-primary);
+  color: white;
+}
+.oeeValue { font-size: 2.5rem; font-weight: 800; }
+.oeeLabel { font-size: 1.1rem; font-weight: 600; }
+
+.indicatorLabel { font-weight: 600; margin-bottom: 0.5rem; }
+.indicatorValue { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
+.progressBar {
+  height: 8px;
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progressBar div {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.largeCard {
+  grid-column: span 2;
+  background: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--color-border);
+}
+
+.cardTitle {
+  margin-top: 0;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.detailItem h4 {
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+}
+.detailItem p {
+  margin-top: 0;
+}
+/* Adicione no final do EvaluationDetailPage.module.css */
+.goalsCard {
+  grid-column: span 4; /* Faz o card ocupar a largura total */
+}
+
+.goalsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.goalItem {
+  padding: 1rem;
+  border-radius: 5px;
+  border-left: 5px solid;
+  background-color: var(--color-background);
+}
+
+.goalItem.pendente { border-color: var(--color-orange); }
+.goalItem.em_andamento { border-color: var(--color-tangerine); }
+.goalItem.concluida { border-color: var(--color-mint); }
+
+.goalItem.concluida .goalTitle {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.goalStatus {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  color: white;
+  text-transform: uppercase;
+}
+
+.pendente .goalStatus { background-color: var(--color-orange); }
+.em_andamento .goalStatus { background-color: var(--color-tangerine); }
+.concluida .goalStatus { background-color: var(--color-mint); }
+
+.goalTitle {
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.goalItem small {
+  font-style: italic;
+  color: #888;
+}
+/* Adicione este código no final do arquivo EvaluationDetailPage.module.css */
+
+@media (max-width: 900px) {
   .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+    /* Em telas de tablet, passamos para 2 colunas */
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .grid p {
-    margin: 0.5rem 0;
+
+  .largeCard, .goalsCard {
+    /* Cards grandes ocupam a largura toda */
+    grid-column: span 2;
   }
-  
-  .grid strong {
-    color: var(--color-primary);
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
+
+  .grid {
+    /* Em telas de celular, passamos para 1 coluna */
+    grid-template-columns: 1fr;
+  }
+
+  .oeeCard, .indicatorCard, .largeCard, .goalsCard {
+    /* Todos os cards agora ocupam a largura toda */
+    grid-column: span 1;
+  }
+}

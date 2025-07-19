@@ -1,34 +1,98 @@
 /* frontend/src/components/Sidebar/Sidebar.module.css */
 .sidebar {
-    grid-area: sidebar;
-    background-color: var(--color-surface);
-    padding: 2rem 0;
-    border-right: 1px solid var(--color-border);
+  grid-area: sidebar;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebarContent {
+  padding-top: 2rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.navLink,
+.activeLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-decoration: none;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+  transition: background-color 0.2s, border-left 0.2s, color 0.2s, padding 0.3s ease-in-out;
+}
+
+.navLink {
+  color: var(--color-text);
+}
+
+.navLink:hover {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+}
+
+.activeLink {
+  background-color: #e8eaf6;
+  color: var(--color-primary);
+  border-left: 3px solid var(--color-primary);
+}
+
+body[data-theme='dark'] .activeLink {
+    background-color: rgba(90, 126, 199, 0.2);
+}
+
+.icon {
+  font-size: 1.2rem;
+  min-width: 24px;
+  display: inline-block;
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.collapseButton {
+  background: var(--color-background);
+  border: none;
+  border-top: 1px solid var(--color-border);
+  padding: 1rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--color-text);
+  line-height: 1;
+}
+.collapseButton:hover {
+  background-color: #e0e0e0;
+}
+
+/* Regra simplificada para esconder o texto */
+.textCollapsed {
+  display: none;
+}
+
+/* Ajusta o padding e centraliza o ícone quando recolhido */
+.layout.sidebarCollapsed .sidebar .navLink,
+.layout.sidebarCollapsed .sidebar .activeLink {
+  justify-content: center;
+  padding: 0.8rem 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed; left: 0; top: 0; height: 100%;
+    width: 250px; z-index: 999;
+    transform: translateX(-100%);
+    padding-top: 64px; border-right: 1px solid var(--color-border);
   }
-  
-  .nav {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .navLink {
-    padding: 0.8rem 2rem;
-    color: var(--color-text);
-    text-decoration: none;
-    font-weight: 600;
-    border-left: 3px solid transparent;
-    transition: background-color 0.2s, border-left 0.2s;
-  }
-  
-  .navLink:hover {
-    background-color: var(--color-background);
-  }
-  
-  .activeLink {
-    padding: 0.8rem 2rem;
-    text-decoration: none;
-    font-weight: 600;
-    background-color: #e8eaf6; /* Um tom claro de azul */
-    color: var(--color-primary);
-    border-left: 3px solid var(--color-primary);
-  }
+  .sidebarOpen { transform: translateX(0); }
+  .collapseButton { display: none; }
+}

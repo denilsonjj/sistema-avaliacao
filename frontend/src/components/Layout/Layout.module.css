@@ -1,18 +1,51 @@
 /* frontend/src/components/Layout/Layout.module.css */
 .layout {
-    display: grid;
-    grid-template-columns: 240px 1fr; /* Largura da sidebar e o resto */
-    grid-template-rows: 64px 1fr; /* Altura do header e o resto */
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 64px 1fr;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  transition: grid-template-columns 0.3s ease-in-out;
+}
+
+/* Estilo para quando a sidebar está recolhida no desktop */
+.layout.sidebarCollapsed {
+  grid-template-columns: 80px 1fr;
+}
+
+.mainContent {
+  grid-area: main;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: var(--color-background);
+}
+
+.overlay {
+  display: none;
+}
+
+/* Estilos para Telas Menores (Tablets e Celulares) */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "header header"
-      "sidebar main";
-    height: 100vh;
-    width: 100vw;
+      "header"
+      "main";
   }
-  
-  .mainContent {
-    grid-area: main;
-    padding: 2rem;
-    overflow-y: auto; /* Permite scroll se o conteúdo for grande */
-    background-color: var(--color-background);
+
+  /* O overlay é um fundo escuro que aparece atrás do menu aberto no mobile */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    display: block;
   }
+}

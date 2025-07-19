@@ -1,9 +1,11 @@
+// backend/controllers/evaluationController.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// Criar uma nova avaliação
 exports.createEvaluation = async (req, res) => {
   const { userId } = req.params;
-  const data = req.body;
+  const data = req.body; // O body agora terá os campos com _score e _notes
 
   try {
     const evaluation = await prisma.evaluation.create({
@@ -15,6 +17,21 @@ exports.createEvaluation = async (req, res) => {
     res.status(201).json(evaluation);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao criar avaliação.', error: error.message });
+  }
+};
+
+// ATUALIZAR UMA AVALIAÇÃO
+exports.updateEvaluation = async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  try {
+    const updatedEvaluation = await prisma.evaluation.update({
+      where: { id: id },
+      data: data,
+    });
+    res.status(200).json(updatedEvaluation);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao atualizar avaliação.', error: error.message });
   }
 };
 
@@ -35,11 +52,8 @@ exports.getEvaluationsByUser = async (req, res) => {
 // Obter estatísticas do sistema
 exports.getSystemStats = async (req, res) => {
   try {
-    // Contagem de usuários e avaliações em paralelo
     const userCount = await prisma.user.count();
     const evaluationCount = await prisma.evaluation.count();
-
-    // Agregação para calcular as médias de OEE
     const oeeAverages = await prisma.evaluation.aggregate({
       _avg: {
         availability: true,
@@ -51,14 +65,11 @@ exports.getSystemStats = async (req, res) => {
     const avgAvailability = oeeAverages._avg.availability || 0;
     const avgPerformance = oeeAverages._avg.performance || 0;
     const avgQuality = oeeAverages._avg.quality || 0;
-
-    // OEE é o produto das médias (em decimal)
     const overallOEE = (avgAvailability / 100) * (avgPerformance / 100) * (avgQuality / 100);
 
     res.status(200).json({
       userCount,
       evaluationCount,
-      // Retorna a média em porcentagem, com duas casas decimais
       averageOEE: (overallOEE * 100).toFixed(2),
     });
 
@@ -77,8 +88,6 @@ exports.getOEEByUser = async (req, res) => {
         },
       },
     });
-
-    // Agrupa as avaliações por usuário
     const userEvals = evaluations.reduce((acc, eval) => {
       const userName = eval.user.name;
       if (!acc[userName]) {
@@ -87,30 +96,24 @@ exports.getOEEByUser = async (req, res) => {
       acc[userName].push(eval);
       return acc;
     }, {});
-
-    // Calcula a média de OEE para cada usuário
     const dataForChart = Object.keys(userEvals).map(userName => {
       const evals = userEvals[userName];
       const avgAvailability = evals.reduce((sum, e) => sum + e.availability, 0) / evals.length;
       const avgPerformance = evals.reduce((sum, e) => sum + e.performance, 0) / evals.length;
       const avgQuality = evals.reduce((sum, e) => sum + e.quality, 0) / evals.length;
-      
       const oee = (avgAvailability / 100) * (avgPerformance / 100) * (avgQuality / 100);
-
       return {
-        name: userName, // Nome do usuário para o eixo X
-        oee: parseFloat((oee * 100).toFixed(2)), // Valor para o eixo Y
+        name: userName,
+        oee: parseFloat((oee * 100).toFixed(2)),
       };
     });
-
     res.status(200).json(dataForChart);
-
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar dados de OEE por usuário.', error: error.message });
   }
 };
 
-
+// BUSCAR UMA AVALIAÇÃO ESPECÍFICA POR ID
 exports.getEvaluationById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -126,29 +129,15 @@ exports.getEvaluationById = async (req, res) => {
   }
 };
 
-// ATUALIZAR UMA AVALIAÇÃO
-exports.updateEvaluation = async (req, res) => {
-  const { id } = req.params;
-  const data = req.body;
-  try {
-    const updatedEvaluation = await prisma.evaluation.update({
-      where: { id: id },
-      data: data,
-    });
-    res.status(200).json(updatedEvaluation);
-  } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar avaliação.', error: error.message });
-  }
-};
+// EXCLUIR UMA AVALIAÇÃO
 exports.deleteEvaluation = async (req, res) => {
   const { id } = req.params;
   try {
     await prisma.evaluation.delete({
       where: { id: id },
     });
-    res.status(204).send(); // 204 No Content - sucesso, sem corpo de resposta
+    res.status(204).send();
   } catch (error) {
-    // P2025 é o código de erro do Prisma para "registro não encontrado"
     if (error.code === 'P2025') {
       return res.status(404).json({ message: 'Avaliação não encontrada.' });
     }

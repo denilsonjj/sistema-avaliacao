@@ -3,24 +3,20 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import Card from '../../components/Card/Card';
-import OeeBarChart from '../../components/charts/OeeBarChart';
 import styles from './PmmDashboardPage.module.css';
 
 function PmmDashboardPage() {
   const [stats, setStats] = useState({ userCount: 0, evaluationCount: 0, averageOEE: 0 });
   const [users, setUsers] = useState([]);
-  const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Promise.all para buscar dados em paralelo
-        const [statsRes, usersRes, chartRes] = await Promise.all([
+        const [statsRes, usersRes] = await Promise.all([
           api.get('/evaluations/stats'),
-          api.get('/auth/users'),
-          api.get('/evaluations/charts/oee-by-user'),
+          api.get('/auth/users')
         ]);
         setStats(statsRes.data);
         setUsers(usersRes.data);
@@ -63,13 +59,6 @@ function PmmDashboardPage() {
         </Card>
       </div>
 
-      <div className={styles.chartContainer}>
-        <Card title="Média de OEE por Usuário">
-          <OeeBarChart data={chartData} />
-        </Card>
-      </div>
-
-
       <Card title="Todos os Usuários do Sistema">
         <table className={styles.userTable}>
           <thead>
@@ -83,10 +72,10 @@ function PmmDashboardPage() {
           <tbody>
             {users.map(user => (
               <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>
+                <td data-label="Nome">{user.name}</td>
+                <td data-label="Email">{user.email}</td>
+                <td data-label="Perfil">{user.role}</td>
+                <td data-label="Ações">
                   <Link to={`/equipe/${user.id}`} className={styles.actionButton}>
                     Ver Detalhes
                   </Link>
