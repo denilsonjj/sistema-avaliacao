@@ -1,7 +1,7 @@
 // backend/services/schedulerService.js
 const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
-const { calculatePerformance, calculateAvailability, calculateQuality } = require('./productionDbService'); // Importe a nova função
+const { calculatePerformance, calculateAvailability, calculateQuality } = require('./productionDbService');
 
 const prisma = new PrismaClient();
 const shiftMap = { 1: 2, 2: 3, 3: 1 };
@@ -53,8 +53,6 @@ const startScheduler = () => {
         timezone: "America/Sao_Paulo"
     });
     console.log('Agendador de tarefas iniciado. A tarefa rodará todos os dias às 09:00.');
-
-    // Roda a tarefa uma vez ao iniciar para testes
    // console.log('A tarefa de atualização de OEE será executada em 10 segundos...');
   //  setTimeout(updateOeeData, 10000); 
 };
