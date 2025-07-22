@@ -1,4 +1,3 @@
-/* frontend/src/pages/TeamDashboardPage/TeamDashboardPage.module.css */
 .container h1 {
     color: var(--color-primary);
   }
@@ -18,6 +17,7 @@
   .teamTable td {
     padding: 0.8rem 1rem;
     border-bottom: 1px solid var(--color-border);
+    text-align: center;
   }
   
   .teamTable th {

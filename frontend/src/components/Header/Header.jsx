@@ -15,7 +15,7 @@ function Header({ onMenuClick }) {
       </button>
 
       <div className={styles.headerTitle}>
-        Sistema de Gestão de Avaliação
+        Sistema de Gestão e Avaliação
       </div>
       <div className={styles.headerActions}>
         <button onClick={toggleTheme} className={styles.themeButton}>

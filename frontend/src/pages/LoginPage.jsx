@@ -31,7 +31,7 @@ function LoginPage() {
   return (
     <div className={styles.container}>
       <div className={styles.loginBox}>
-        <h2 className={styles.title}>Sistema de Avaliação</h2>
+        <h2 className={styles.title}>Sistema de Gestão e Avaliação</h2>
         <form className={styles.form} onSubmit={handleSubmit}>
           <input
             type="email"

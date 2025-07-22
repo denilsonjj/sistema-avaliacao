@@ -1,6 +1,6 @@
-// frontend/src/pages/MyEvaluationsPage/MyEvaluationsPage.jsx
 import React, { useState, useEffect } from 'react';
-import api from '../../services/api'; // Use o serviço de API
+import { Link } from 'react-router-dom';
+import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/Card/Card';
 import styles from './MyEvaluationsPage.module.css';
@@ -9,25 +9,13 @@ function MyEvaluationsPage() {
   const [evaluations, setEvaluations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user } = useAuth(); // Pegamos o usuário logado
-  
-  //logica de deletar usuarios
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm('ATENÇÃO! Excluir este usuário também removerá TODAS as suas avaliações e feedbacks. Deseja continuar?')) {
-      try {
-        await api.delete(`/auth/users/${userId}`);
-        setUsers(prev => prev.filter(u => u.id !== userId));
-      } catch (err) {
-        alert('Erro ao excluir usuário.');
-      }
-    }
-  };
+  const { user } = useAuth();
+
   useEffect(() => {
     if (!user) return;
 
     const fetchEvaluations = async () => {
       try {
-        // Use o serviço 'api'
         const response = await api.get(`/evaluations/user/${user.userId}`);
         setEvaluations(response.data);
       } catch (err) {
@@ -39,6 +27,19 @@ function MyEvaluationsPage() {
 
     fetchEvaluations();
   }, [user]);
+
+  // Função para lidar com a exclusão
+  const handleDelete = async (evaluationId) => {
+    if (window.confirm('Tem certeza que deseja excluir esta avaliação? Esta ação não pode ser desfeita.')) {
+      try {
+        await api.delete(`/evaluations/${evaluationId}`);
+        // Atualiza a lista na tela sem precisar recarregar
+        setEvaluations(prev => prev.filter(ev => ev.id !== evaluationId));
+      } catch (err) {
+        alert('Erro ao excluir avaliação.');
+      }
+    }
+  };
 
   if (loading) {
     return <p>Carregando suas avaliações...</p>;
@@ -56,22 +57,32 @@ function MyEvaluationsPage() {
       <div className={styles.evaluationList}>
         {evaluations.length > 0 ? (
           evaluations.map(evaluation => (
-            <Card key={evaluation.id} title={`Avaliação de ${new Date(evaluation.createdAt).toLocaleDateString()}`}>
+            <Card 
+              key={evaluation.id} 
+              title={`Avaliação de ${new Date(evaluation.createdAt).toLocaleDateString()}`}
+            >
+              <div className={styles.cardActions}>
+                <Link to={`/avaliacoes/${evaluation.id}/editar`} className={styles.editButton}>
+                  Editar
+                </Link>
+                <button onClick={() => handleDelete(evaluation.id)} className={styles.deleteButton}>Excluir</button>
+              </div>
+
               <div className={styles.grid}>
                 <div>
                   <h4>Avaliação Individual</h4>
-                  <p><strong>Conhecimento Técnico:</strong> {evaluation.technicalKnowledge}</p>
-                  <p><strong>Certificações:</strong> {evaluation.certifications}</p>
+                  <p><strong>Conhecimento Técnico:</strong> {evaluation.technicalKnowledge_notes}</p>
+                  <p><strong>Certificações:</strong> {evaluation.certifications_notes}</p>
                 </div>
                 <div>
                   <h4>Avaliação de Desempenho</h4>
-                  <p><strong>Qualidade do Serviço:</strong> {evaluation.serviceQuality}</p>
-                  <p><strong>Iniciativa:</strong> {evaluation.problemSolvingInitiative}</p>
+                  <p><strong>Qualidade do Serviço (Nota):</strong> {evaluation.serviceQuality_score}</p>
+                  <p><strong>Iniciativa (Nota):</strong> {evaluation.problemSolvingInitiative_score}</p>
                 </div>
                  <div>
                   <h4>Avaliação Comportamental</h4>
-                  <p><strong>Trabalho em Equipe:</strong> {evaluation.teamwork}</p>
-                  <p><strong>Comprometimento:</strong> {evaluation.commitment}</p>
+                  <p><strong>Trabalho em Equipe (Nota):</strong> {evaluation.teamwork_score}</p>
+                  <p><strong>Comprometimento (Nota):</strong> {evaluation.commitment_score}</p>
                 </div>
               </div>
             </Card>

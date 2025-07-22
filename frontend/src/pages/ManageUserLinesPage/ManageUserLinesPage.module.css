@@ -1,0 +1,19 @@
+.linesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  .checkboxWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .checkboxWrapper input {
+    width: 20px;
+    height: 20px;
+  }
+  .saveButton {
+    margin: 1.5rem;
+    padding: 0.8rem 2rem;
+  }

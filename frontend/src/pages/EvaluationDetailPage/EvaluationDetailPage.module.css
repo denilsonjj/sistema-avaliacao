@@ -142,7 +142,21 @@
   font-style: italic;
   color: #888;
 }
-/* Adicione este código no final do arquivo EvaluationDetailPage.module.css */
+
+
+.headerActions {
+  display: flex;
+  gap: 1rem; 
+}
+
+.actionButton.secondary {
+  background-color: var(--color-mint); 
+}
+
+.actionButton.secondary:hover {
+  background-color: var(--color-mint-dark);
+}
+
 
 @media (max-width: 900px) {
   .grid {

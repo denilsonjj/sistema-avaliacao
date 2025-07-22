@@ -1,8 +1,7 @@
-// frontend/src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Função para decodificar o payload do JWT de forma simples
+// Função para decodificar o payload do JWT
 function parseJwt(token) {
   if (!token) { return null; }
   try {
@@ -23,21 +22,21 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('authToken'));
-  const [user, setUser] = useState(null); // Novo estado para dados do usuário
+  const [user, setUser] = useState(null); 
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     if (storedToken) {
       setToken(storedToken);
-      setUser(parseJwt(storedToken)); // Decodifica o token ao carregar
+      setUser(parseJwt(storedToken)); 
     }
   }, []);
 
   const login = (newToken) => {
     localStorage.setItem('authToken', newToken);
     setToken(newToken);
-    setUser(parseJwt(newToken)); // Decodifica o token no login
+    setUser(parseJwt(newToken)); 
     navigate('/dashboard');
   };
 

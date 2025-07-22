@@ -1,7 +1,7 @@
 // frontend/src/pages/TeamDashboardPage/TeamDashboardPage.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../services/api'; // Importe o serviço
+import api from '../../services/api'; 
 import Card from '../../components/Card/Card';
 import styles from './TeamDashboardPage.module.css';
 
@@ -9,12 +9,11 @@ function TeamDashboardPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // Não precisamos mais de useAuth aqui para o token
+
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // Use o serviço 'api'. Não precisa mais de headers.
         const response = await api.get('/auth/users');
         setUsers(response.data);
       } catch (err) {
@@ -25,9 +24,8 @@ function TeamDashboardPage() {
     };
 
     fetchUsers();
-  }, []); // Não precisa mais da dependência do token
+  }, []); 
 
-  // ... JSX permanece o mesmo
   if (loading) {
     return <p>Carregando equipe...</p>;
   }
@@ -54,7 +52,6 @@ function TeamDashboardPage() {
           <tbody>
             {users.map(user => (
               <tr key={user.id}>
-                {/* Adicione o atributo data-label em cada <td> */}
                 <td data-label="Nome">{user.name}</td>
                 <td data-label="Email">{user.email}</td>
                 <td data-label="Perfil">{user.role}</td>

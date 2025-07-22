@@ -1,4 +1,3 @@
-/* frontend/src/components/Sidebar/Sidebar.module.css */
 .sidebar {
   grid-area: sidebar;
   background-color: var(--color-surface);
@@ -23,8 +22,8 @@
 .activeLink {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.8rem 1.5rem;
+  gap: 0.5rem; 
+  padding: 0.8rem 1.2rem; 
   white-space: nowrap;
   overflow: hidden;
   text-decoration: none;
@@ -74,12 +73,10 @@ body[data-theme='dark'] .activeLink {
   background-color: #e0e0e0;
 }
 
-/* Regra simplificada para esconder o texto */
 .textCollapsed {
   display: none;
 }
 
-/* Ajusta o padding e centraliza o ícone quando recolhido */
 .layout.sidebarCollapsed .sidebar .navLink,
 .layout.sidebarCollapsed .sidebar .activeLink {
   justify-content: center;

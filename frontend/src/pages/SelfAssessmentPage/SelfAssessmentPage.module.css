@@ -1,8 +1,94 @@
-.container h1 { color: var(--color-primary); }
-.form { display: flex; flex-direction: column; }
-.formGroup { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
-.formGroup label { font-weight: 600; }
-.formGroup textarea { padding: 0.8rem; font-size: 1rem; border-radius: 4px; border: 1px solid var(--color-border); font-family: inherit; resize: vertical; }
-.submitButton { padding: 0.8rem; font-size: 1rem; font-weight: 700; background-color: var(--color-primary); color: var(--color-text-on-primary); border: none; border-radius: 4px; cursor: pointer; }
-.submitButton:disabled { background-color: #a0a0a0; }
-.message { text-align: center; font-weight: 600; margin-top: 1rem; }
+.container {
+    max-width: 900px;
+}
+
+.container h1 {
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.container p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: #888;
+}
+
+body[data-theme='dark'] .container p {
+    color: #a0a0a0;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--color-text);
+}
+
+.formGroup textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 1rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+.formGroup textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(36, 55, 130, 0.2);
+}
+
+body[data-theme='dark'] .formGroup textarea:focus {
+    box-shadow: 0 0 0 3px rgba(90, 126, 199, 0.3);
+}
+
+.submitButton {
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+    align-self: flex-start; /* Alinha o botão à esquerda */
+    min-width: 200px;
+}
+
+.submitButton:hover {
+    background-color: #314cb5;
+}
+
+.submitButton:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.message {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-radius: 4px;
+    background-color: var(--color-background);
+}

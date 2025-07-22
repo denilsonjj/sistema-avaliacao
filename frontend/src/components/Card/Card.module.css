@@ -3,7 +3,8 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--color-border);
-    overflow: hidden; /* Garante que o conteúdo respeite o border-radius */
+    overflow: hidden;
+    position: relative;
   }
   
   .cardTitle {

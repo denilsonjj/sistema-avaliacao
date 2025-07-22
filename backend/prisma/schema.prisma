@@ -26,6 +26,13 @@ enum Status {
   CONCLUIDA
 }
 
+// --- NOVOS MODELOS E RELAÇÕES ---
+model ProductionLine {
+  id    String @id @default(cuid())
+  name  String @unique // Ex: "TRIM 1", "CHASSIS 4"
+  users User[]   // Relação com os usuários
+}
+
 model User {
   id                  String           @id @default(cuid())
   email               String           @unique
@@ -34,12 +41,13 @@ model User {
   role                Role             @default(TECNICO)
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
-
-  // --- NOVOS CAMPOS DE PERFIL ---
-  technicalSkills     String?          // O '?' indica que o campo é opcional
+  
+  // Campos de Perfil
+  technicalSkills     String?
   certifications      String?
-
-  // Relações (existentes)
+  
+  // Relações
+  productionLines     ProductionLine[]
   evaluations         Evaluation[]
   selfAssessments     SelfAssessment[]
   receivedFeedbacks   Feedback[]       @relation("RecipientFeedbacks")
@@ -49,19 +57,19 @@ model User {
 }
 
 model Evaluation {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id                             String   @id @default(cuid())
+  createdAt                      DateTime @default(now())
+  updatedAt                      DateTime @updatedAt
+  
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  // --- Campos de Texto (Observações) ---
-  technicalKnowledge_notes       String // Renomeamos para indicar que são notas
+  // Campos de Texto (Observações)
+  technicalKnowledge_notes       String
   certifications_notes           String
   experienceTime_notes           String
 
-  // --- Campos de Pontuação Numérica (1-5) ---
+  // Campos de Pontuação Numérica (1-5)
   serviceQuality_score           Int
   executionTimeframe_score       Int
   problemSolvingInitiative_score Int
@@ -69,7 +77,7 @@ model Evaluation {
   commitment_score               Int
   proactivity_score              Int
 
-  // --- Indicadores OEE (%) ---
+  // Indicadores OEE (%)
   availability Float
   performance  Float
   quality      Float
@@ -113,4 +121,18 @@ model Goal {
 
   author   User   @relation("AuthorGoals", fields: [authorId], references: [id])
   authorId String
+}
+
+model DailyOeeResult {
+  id            String   @id @default(cuid())
+  date          DateTime
+  lineDesc      String
+  shift         Int
+  
+  availability  Float
+  performance   Float
+  quality       Float
+  oee           Float
+
+  @@unique([date, lineDesc, shift])
 }

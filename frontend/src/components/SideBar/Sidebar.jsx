@@ -20,7 +20,7 @@ function Sidebar({ isMobileOpen, isDesktopCollapsed, onLinkClick, onCollapseClic
     <aside className={`${styles.sidebar} ${isMobileOpen ? styles.sidebarOpen : ''}`}>
       <div className={styles.sidebarContent}>
         <nav className={styles.nav} onClick={onLinkClick}>
-          {/* O span do texto agora tem uma classe condicional */}
+          
           <NavLink to="/dashboard" {...getLinkProps('Início')}>
             <span className={styles.icon}><FaTachometerAlt /></span>
             <span className={`${styles.text} ${isDesktopCollapsed ? styles.textCollapsed : ''}`}>Início</span>

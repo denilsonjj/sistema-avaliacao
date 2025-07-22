@@ -19,6 +19,9 @@ import RegisterPage from './pages/RegisterPage/RegisterPage.jsx';
 import GoalsPage from './pages/GoalsPage/GoalsPage'
 import ProfilePage from './pages/ProfilePage/ProfilePage.jsx';
 import ReportsPage from './pages/ReportsPage/ReportsPage';
+import AssignGoalPage from './pages/AssignGoalPage/AssignGoalPage.jsx';
+import ManageUserLinesPage from './pages/ManageUserLinesPage/ManageUserLinesPage.jsx';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import './index.css';
 
@@ -85,6 +88,14 @@ const router = createBrowserRouter([
        {
         path: '/relatorios',
         element: <ProtectedRoute><ReportsPage /></ProtectedRoute>,
+      },
+      {
+        path: '/equipe/:userId/atribuir-meta',
+        element: <ProtectedRoute><AssignGoalPage /></ProtectedRoute>,
+      },
+      {
+        path: '/gerenciar-usuarios/:userId/linhas',
+        element: <ProtectedRoute><ManageUserLinesPage /></ProtectedRoute>,
       },
     ],
   },
