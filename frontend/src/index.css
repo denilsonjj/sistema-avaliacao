@@ -1,4 +1,3 @@
-/* Importa a fonte do Google Fonts com todos os pesos definidos no guia */
 @import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
@@ -7,10 +6,10 @@
   --color-text-on-primary: #ffffff;
   
   /* Cores de Texto e Fundo */
-  --color-background: #f4f7f6; /* Um cinza claro para o fundo geral */
-  --color-surface: #ffffff; /* Branco para superfícies como cards e inputs */
-  --color-text: #282b34; /* Antracite como cor de texto principal */
-  --color-border: #dce1e6; /* Cor para bordas sutis */
+  --color-background: #f4f7f6; 
+  --color-surface: #ffffff; 
+  --color-text: #282b34; 
+  --color-border: #dce1e6; 
 
   /* Cores Secundárias (do guia de identidade) */
   --color-tangerine: #ec94a2;
@@ -36,18 +35,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* frontend/src/index.css */
-/* ... (import da fonte) ... */
+
 
 :root {
-  /* Tema Claro (Padrão) */
+ 
   --color-primary: #243782;
   --color-text-on-primary: #ffffff;
   --color-background: #f4f7f6;
   --color-surface: #ffffff;
   --color-text: #282b34;
   --color-border: #dce1e6;
-  /* ... (outras cores) ... */
+ 
 }
 
 /* Tema Escuro */

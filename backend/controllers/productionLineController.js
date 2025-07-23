@@ -49,3 +49,36 @@ exports.updateUserLines = async (req, res) => {
         res.status(500).json({ message: "Erro ao atualizar as linhas do usuário." });
     }
 };
+
+exports.getUsersForLine = async (req, res) => {
+    // Decodifica o nome da linha que vem da URL (ex: "TRIM%201" vira "TRIM 1")
+    const { lineName } = req.params;
+    const decodedLineName = decodeURIComponent(lineName);
+
+    try {
+        const lineWithUsers = await prisma.productionLine.findUnique({
+            where: { name: decodedLineName },
+            include: {
+                users: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true
+                    },
+                    orderBy: {
+                        name: 'asc'
+                    }
+                }
+            }
+        });
+
+        if (!lineWithUsers) {
+            return res.status(404).json({ message: "Linha de produção não encontrada." });
+        }
+
+        res.status(200).json(lineWithUsers.users);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao buscar usuários da linha de produção.", error: error.message });
+    }
+};

@@ -112,3 +112,26 @@ exports.updateUserProfile = async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar o perfil.', error: error.message });
   }
 };
+
+// Adicionar ao final de backend/controllers/authController.js
+
+exports.getUserStatsByRole = async (req, res) => {
+  try {
+    const usersByRole = await prisma.user.groupBy({
+      by: ['role'],
+      _count: {
+        id: true,
+      },
+    });
+
+    // Formata os dados para o gráfico
+    const formattedData = usersByRole.map(item => ({
+      name: item.role,
+      value: item._count.id,
+    }));
+
+    res.status(200).json(formattedData);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar estatísticas de usuários por perfil.', error: error.message });
+  }
+};

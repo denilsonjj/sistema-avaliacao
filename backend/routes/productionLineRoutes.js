@@ -1,4 +1,3 @@
-// backend/routes/productionLineRoutes.js
 const express = require('express');
 const router = express.Router();
 const lineController = require('../controllers/productionLineController');
@@ -8,5 +7,5 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.get('/', authMiddleware, lineController.getAllLines);
 router.get('/user/:userId', authMiddleware, lineController.getLinesForUser);
 router.post('/user/:userId', authMiddleware, lineController.updateUserLines);
-
+router.get('/line/:lineName/users', authMiddleware, lineController.getUsersForLine);
 module.exports = router;

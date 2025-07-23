@@ -7,7 +7,7 @@
   font-weight: 600;
 }
 
-.statsGrid {
+.kpiGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
@@ -17,6 +17,10 @@
 .statBox {
   text-align: center;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
 .statValue {
@@ -71,12 +75,38 @@
 .actionButton:hover {
   background-color: #314cb5;
 }
+
 .chartContainer {
   margin-bottom: 2rem;
 }
+/* Adicionar ao final de PmmDashboardPage.module.css */
+.technicianCard {
+  margin-bottom: 2rem;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Adicionar ao final de PmmDashboardPage.module.css */
+.kpiTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-primary);
+  margin-bottom: -1rem; /* Ajuste para aproximar o gráfico */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 768px) {
-  .statsGrid {
+  .kpiGrid {
     grid-template-columns: 1fr;
   }
 
@@ -103,7 +133,7 @@
     padding-left: 50%;
     position: relative;
     border-bottom: 1px dashed var(--color-border);
-    overflow-wrap: break-word; /* << A CORREÇÃO PRINCIPAL */
+    overflow-wrap: break-word;
   }
 
   .userTable td:last-child {
