@@ -1,33 +1,68 @@
-/* frontend/src/pages/TechnicianDashboardPage/TechnicianDashboardPage.module.css */
+
 .container h1 {
   color: var(--color-primary);
 }
 
-.grid {
+.container > p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  color: #888;
+}
+
+/* Novo Grid para KPIs */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.kpiCard {
+  text-align: center;
+  padding: 1rem;
+  border-left: 5px solid; /* Borda colorida */
+}
+
+.kpiValue {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.kpiLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: 0.5rem;
+}
+
+/* Grid Principal */
+.mainGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1.5rem;
-  margin-top: 2rem;
   align-items: flex-start;
 }
 
 @media (max-width: 900px) {
-  .grid {
+  .mainGrid {
     grid-template-columns: 1fr;
   }
 }
 
-.evaluationSummary p {
-  line-height: 1.6;
-  font-size: 1.1rem;
+.chartContainer {
+  width: 100%;
+  height: 350px; /* Altura fixa para o radar */
+  margin-bottom: 1rem;
 }
 
 .detailsLink {
   display: inline-block;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   font-weight: 700;
   color: var(--color-primary);
   text-decoration: none;
+  padding: 0.5rem; /* Aumenta a área de clique */
 }
 
 .goalsList {
@@ -37,9 +72,16 @@
 }
 
 .goalItem {
-  padding: 0.8rem;
+  padding: 1rem;
   background-color: var(--color-background);
-  border-left: 3px solid var(--color-tangerine);
+  border-left: 3px solid var(--color-orange);
   border-radius: 4px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.goalItem svg {
+  color: var(--color-orange-dark);
 }

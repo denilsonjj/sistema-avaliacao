@@ -1,32 +1,28 @@
 // backend/controllers/oeeController.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const ExcelJS = require('exceljs');
 
 // Busca os dados de OEE pré-calculados para um usuário específico
 exports.getOeeForUser = async (req, res) => {
     const { userId } = req.params;
     try {
-        console.log(`\n--- BUSCANDO OEE PARA USUÁRIO: ${userId} ---`); // LOG 1
-
         const userWithLines = await prisma.user.findUnique({
             where: { id: userId },
             include: { productionLines: true },
         });
 
         if (!userWithLines || userWithLines.productionLines.length === 0) {
-            console.log("Usuário não encontrado ou não possui linhas associadas."); // LOG 2
             return res.status(200).json([]);
         }
 
         const lineNames = userWithLines.productionLines.map(line => line.name);
-        console.log("Linhas associadas encontradas:", lineNames); // LOG 3
 
         const latestDateEntry = await prisma.dailyOeeResult.findFirst({
             orderBy: { date: 'desc' }
         });
 
         if (!latestDateEntry) {
-            console.log("Nenhum dado de OEE pré-calculado encontrado na tabela DailyOeeResult.");
             return res.status(200).json([]);
         }
 
@@ -37,44 +33,46 @@ exports.getOeeForUser = async (req, res) => {
             }
         });
         
-        console.log("Resultados de OEE encontrados:", oeeResults); // LOG 4
-
         res.status(200).json(oeeResults);
     } catch (error) {
-        console.error("Erro detalhado no controller de OEE:", error);
         res.status(500).json({ message: 'Erro ao buscar dados de OEE para o usuário.' });
     }
 };
 
+// Busca um resumo do OEE de todas as linhas para o dia mais recente
 exports.getOeeOverviewForAllLines = async (req, res) => {
     try {
-        console.log(`\n--- BUSCANDO OVERVIEW DE OEE PARA TODAS AS LINHAS ---`);
+        const { datePreset = 'today', lines } = req.query;
 
-        const latestDateEntry = await prisma.dailyOeeResult.findFirst({
-            orderBy: { date: 'desc' }
-        });
-
-        if (!latestDateEntry) {
-            console.log("Nenhum dado de OEE pré-calculado encontrado.");
-            return res.status(200).json([]);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        let startDate = new Date(today);
+        startDate.setHours(0, 0, 0, 0);
+        
+        if (datePreset === 'last7days') {
+            startDate.setDate(today.getDate() - 6);
+        } else if (datePreset === 'last30days') {
+            startDate.setDate(today.getDate() - 29);
         }
 
-        const latestDate = latestDateEntry.date;
-        console.log(`Dados mais recentes encontrados para a data: ${latestDate.toISOString()}`);
+        const whereClause = {
+            date: {
+                gte: startDate,
+                lte: today,
+            }
+        };
+
+        if (lines) {
+            whereClause.lineDesc = { in: lines.split(',') };
+        }
 
         const results = await prisma.dailyOeeResult.findMany({
-            where: { date: { equals: latestDate } }
+            where: whereClause,
         });
 
-        // Agrupar e calcular a média dos indicadores por linha
         const overviewByLine = results.reduce((acc, curr) => {
             if (!acc[curr.lineDesc]) {
-                acc[curr.lineDesc] = {
-                    count: 0,
-                    availability: 0,
-                    performance: 0,
-                    quality: 0,
-                };
+                acc[curr.lineDesc] = { count: 0, availability: 0, performance: 0, quality: 0 };
             }
             acc[curr.lineDesc].count++;
             acc[curr.lineDesc].availability += curr.availability;
@@ -92,20 +90,71 @@ exports.getOeeOverviewForAllLines = async (req, res) => {
 
             return {
                 name: lineName,
-                // Mantém os componentes para o gráfico agrupado
                 Disponibilidade: parseFloat(avgAvailability.toFixed(2)),
                 Performance: parseFloat(avgPerformance.toFixed(2)),
                 Qualidade: parseFloat(avgQuality.toFixed(2)),
-                // OEE calculado para referência
                 oee: parseFloat((oee * 100).toFixed(2)),
             };
-        }).sort((a, b) => a.name.localeCompare(b.name)); // Ordena por nome da linha
+        }).sort((a, b) => a.name.localeCompare(b.name));
 
-        console.log("Overview de OEE por linha gerado:", formattedResults);
         res.status(200).json(formattedResults);
 
     } catch (error) {
-        console.error("Erro detalhado no controller de OEE (Overview):", error);
-        res.status(500).json({ message: 'Erro ao buscar overview de OEE.' });
+        res.status(500).json({ message: 'Erro ao buscar overview de OEE.', error: error.message });
     }
+};
+
+// Exportar overview de OEE para Excel (com data e turno)
+exports.exportOeeOverview = async (req, res) => {
+  try {
+    const latestDateEntry = await prisma.dailyOeeResult.findFirst({
+        orderBy: { date: 'desc' }
+    });
+
+    if (!latestDateEntry) {
+        return res.status(404).json({ message: "Nenhum dado de OEE encontrado para exportar." });
+    }
+
+    // Busca todos os resultados da data mais recente, sem agrupar
+    const results = await prisma.dailyOeeResult.findMany({
+        where: { date: { equals: latestDateEntry.date } },
+        orderBy: [{ lineDesc: 'asc' }, { shift: 'asc' }]
+    });
+    
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('OEE_Planta_Detalhado');
+
+    // Adiciona as novas colunas
+    worksheet.columns = [
+      { header: 'Data', key: 'date', width: 20 },
+      { header: 'Linha de Produção', key: 'name', width: 30 },
+      { header: 'Turno', key: 'shift', width: 10 },
+      { header: 'OEE (%)', key: 'oee', width: 15 },
+      { header: 'Disponibilidade (%)', key: 'availability', width: 20 },
+      { header: 'Performance (%)', key: 'performance', width: 20 },
+      { header: 'Qualidade (%)', key: 'quality', width: 15 },
+    ];
+
+    // Adiciona uma linha para cada registro individual
+    results.forEach(line => {
+      worksheet.addRow({
+          date: new Date(line.date).toLocaleDateString('pt-BR'),
+          name: line.lineDesc,
+          shift: line.shift,
+          oee: line.oee,
+          availability: line.availability,
+          performance: line.performance,
+          quality: line.quality
+      });
+    });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=Relatorio_OEE_Planta_Detalhado.xlsx');
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao exportar relatório de OEE.', error: error.message });
+  }
 };

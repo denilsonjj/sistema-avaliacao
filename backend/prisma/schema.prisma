@@ -136,3 +136,16 @@ model DailyOeeResult {
 
   @@unique([date, lineDesc, shift])
 }
+
+model StagingOeeResult {
+  id            String   @id @default(cuid())
+  date          DateTime
+  lineDesc      String
+  shift         Int
+  availability  Float
+  performance   Float
+  quality       Float
+  oee           Float
+
+  @@unique([date, lineDesc, shift])
+}

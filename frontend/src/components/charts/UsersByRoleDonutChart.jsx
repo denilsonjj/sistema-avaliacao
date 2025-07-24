@@ -22,8 +22,8 @@ const UsersByRoleDonutChart = ({ data }) => {
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value) => `${value} usuário(s)`} />
-        <Legend iconType="circle" />
+       <Tooltip formatter={(value) => `${value} usuário(s)`} /> 
+        <Legend iconType="circle"style={{marginTop: 'px'}} />
       </PieChart>
     </ResponsiveContainer>
   );

@@ -11,4 +11,5 @@ router.get('/users/:id', authMiddleware, authController.getUserById);
 router.delete('/users/:id', authMiddleware, authController.deleteUser);
 router.put('/profile', authMiddleware, authController.updateUserProfile);
 router.get('/users/stats/by-role', authMiddleware, authController.getUserStatsByRole);
+router.get('/users/export', authMiddleware, authController.exportUsers);
 module.exports = router;

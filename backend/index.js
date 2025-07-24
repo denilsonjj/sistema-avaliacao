@@ -1,6 +1,3 @@
-// backend/index.js
-
-// A LINHA MAIS IMPORTANTE: Carrega as variáveis de ambiente PRIMEIRO.
 require('dotenv').config();
 
 const express = require('express');

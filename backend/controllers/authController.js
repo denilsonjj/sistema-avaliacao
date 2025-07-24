@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const ExcelJS = require('exceljs');
 const prisma = new PrismaClient();
 
 exports.register = async (req, res) => {
@@ -47,7 +47,22 @@ exports.login = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        evaluations: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1,
+          select: {
+            createdAt: true,
+          },
+        },
+      },
     });
     res.json(users);
   } catch (error) {
@@ -133,5 +148,47 @@ exports.getUserStatsByRole = async (req, res) => {
     res.status(200).json(formattedData);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar estatísticas de usuários por perfil.', error: error.message });
+  }
+};
+exports.exportUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: { name: 'asc' },
+      select: { name: true, email: true, role: true, createdAt: true },
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Usuários');
+
+    worksheet.columns = [
+      { header: 'Nome do Usuário', key: 'name', width: 40 },
+      { header: 'Email', key: 'email', width: 40 },
+      { header: 'Perfil', key: 'role', width: 20 },
+      { header: 'Data de Cadastro', key: 'createdAt', width: 20 },
+    ];
+
+    users.forEach(user => {
+      worksheet.addRow({
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: new Date(user.createdAt).toLocaleDateString('pt-BR'),
+      });
+    });
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + 'Relatorio_Usuarios.xlsx'
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao exportar relatório de usuários.', error: error.message });
   }
 };

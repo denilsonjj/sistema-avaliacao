@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Card from '../../components/Card/Card';
-import Avatar from '../../components/Avatar/Avatar'; // Importe o Avatar
+import Avatar from '../../components/Avatar/Avatar';
 import styles from './FeedbackBoardPage.module.css';
+import { FaQuoteLeft, FaPaperPlane } from 'react-icons/fa'; // Importando ícones
 
 function FeedbackBoardPage() {
   const [users, setUsers] = useState([]);
@@ -14,7 +15,11 @@ function FeedbackBoardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    api.get('/auth/users').then(res => setUsers(res.data));
+    api.get('/auth/users').then(res => {
+      // Ordena os usuários por nome
+      const sortedUsers = res.data.sort((a, b) => a.name.localeCompare(b.name));
+      setUsers(sortedUsers);
+    });
   }, []);
 
   useEffect(() => {
@@ -61,7 +66,10 @@ function FeedbackBoardPage() {
                   onClick={() => handleUserSelect(user.id)}
                 >
                   <Avatar name={user.name} />
-                  <span>{user.name}</span>
+                  <div className={styles.userInfo}>
+                    <span className={styles.userName}>{user.name}</span>
+                    <span className={styles.userRole}>{user.role}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -74,11 +82,22 @@ function FeedbackBoardPage() {
               <div className={styles.feedbackList}>
                 {loadingFeedbacks ? <p>Carregando feedbacks...</p> : feedbacks.map(fb => (
                   <div key={fb.id} className={styles.feedbackCard}>
+                    <div className={styles.feedbackHeader}>
+                      <FaQuoteLeft />
+                    </div>
                     <p className={styles.feedbackContent}>"{fb.content}"</p>
-                    <span className={styles.feedbackAuthor}>- {fb.author.name} em {new Date(fb.createdAt).toLocaleDateString()}</span>
+                    <div className={styles.feedbackFooter}>
+                      <div className={styles.feedbackAuthorInfo}>
+                        <Avatar name={fb.author.name} />
+                        <div>
+                          <strong>{fb.author.name}</strong>
+                          <small>{new Date(fb.createdAt).toLocaleDateString()}</small>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))}
-                {feedbacks.length === 0 && !loadingFeedbacks && <p>Nenhum feedback registrado.</p>}
+                {feedbacks.length === 0 && !loadingFeedbacks && <p>Nenhum feedback registrado para este usuário.</p>}
               </div>
                <form onSubmit={handleSubmitFeedback} className={styles.form}>
                 <textarea
@@ -88,8 +107,8 @@ function FeedbackBoardPage() {
                   rows="4"
                   disabled={isSubmitting}
                 />
-                <button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Enviando...' : 'Adicionar Feedback'}
+                <button type="submit" disabled={isSubmitting || !newFeedback.trim()}>
+                  <FaPaperPlane /> {isSubmitting ? 'Enviando...' : 'Adicionar Feedback'}
                 </button>
               </form>
             </>

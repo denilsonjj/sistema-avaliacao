@@ -1,12 +1,11 @@
-// frontend/src/App.jsx
 import { Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext'; // Importe
+import { ThemeProvider } from './context/ThemeContext'; 
 
 function App() {
   return (
     <AuthProvider>
-      <ThemeProvider> {/* Envolva com o ThemeProvider */}
+      <ThemeProvider> 
         <div>
           <Outlet />
         </div>

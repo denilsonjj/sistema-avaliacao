@@ -1,4 +1,4 @@
-// frontend/src/pages/PmmDashboardPage/PmmDashboardPage.jsx
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -7,7 +7,10 @@ import OeeComponentsChart from '../../components/charts/OeeComponentsChart';
 import OeeGaugeChart from '../../components/charts/OeeGaugeChart';
 import UsersByRoleDonutChart from '../../components/charts/UsersByRoleDonutChart';
 import EvaluationsTrendChart from '../../components/charts/EvaluationsTrendChart';
+import Avatar from '../../components/Avatar/Avatar'; 
 import styles from './PmmDashboardPage.module.css';
+import { FaChartLine } from 'react-icons/fa'; 
+
 
 function PmmDashboardPage() {
   const [stats, setStats] = useState({ userCount: 0, evaluationCount: 0 });
@@ -86,23 +89,23 @@ function PmmDashboardPage() {
       <p>Acesso total aos dados e KPIs de produção do sistema.</p>
       
       <div className={styles.kpiGrid}>
-        <Card>
-          <OeeGaugeChart value={overallAverageOee} title="OEE Médio da Planta" />
+        <Card title="OEE Geral">
+          <OeeGaugeChart value={overallAverageOee} />
         </Card>
         
         <Card title="Usuários Cadastrados">
-          <div className={styles.kpiTitle}>{stats.userCount}</div>
+        {/*  <div className={styles.kpiTitle}>{stats.userCount}</div>*/}
           <UsersByRoleDonutChart data={usersByRole} />
         </Card>
 
         <Card title="Avaliações Realizadas">
-          <div className={styles.kpiTitle}>{stats.evaluationCount}</div>
+        {/*  <div className={styles.kpiTitle}>{stats.evaluationCount}</div>*/}
           <EvaluationsTrendChart data={evaluationsTrend} />
         </Card>
       </div>
 
       <div className={styles.chartContainer}>
-        <Card title="Desempenho OEE por Linha de Produção (Clique para ver detalhes)">
+        <Card title="Desempenho por Linha de Produção">
           {oeeOverview.length > 0 ? (
             <OeeComponentsChart data={oeeOverview} onBarClick={handleBarClick} />
           ) : (
@@ -113,7 +116,7 @@ function PmmDashboardPage() {
       
       {selectedLine && (
         <div className={styles.technicianCard}>
-          <Card title={`Técnicos Responsáveis - ${selectedLine}`}>
+          <Card title={`Técnicos Responsáveis por ${selectedLine}`}>
             {loadingTechnicians ? (
               <p>Buscando técnicos...</p>
             ) : lineTechnicians.length > 0 ? (
@@ -154,16 +157,17 @@ function PmmDashboardPage() {
           </thead>
           <tbody>
             {users.map(user => (
-              <tr key={user.id}>
-                <td data-label="Nome">{user.name}</td>
-                <td data-label="Email">{user.email}</td>
-                <td data-label="Perfil">{user.role}</td>
-                <td data-label="Ações">
-                  <Link to={`/equipe/${user.id}`} className={styles.actionButton}>
-                    Ver Detalhes
-                  </Link>
-                </td>
-              </tr>
+             <tr key={user.id}>
+             <td className={styles.avatarCell}><Avatar name={user.name} /></td>
+             <td data-label="Nome">{user.name}</td>
+             <td data-label="Email">{user.email}</td>
+             <td data-label="Perfil">{user.role}</td>
+             <td data-label="Ações">
+               <Link to={`/equipe/${user.id}`} className={styles.actionButton}>
+                 <FaChartLine /> Ver Avaliação
+               </Link>
+             </td>
+           </tr>
             ))}
           </tbody>
         </table>

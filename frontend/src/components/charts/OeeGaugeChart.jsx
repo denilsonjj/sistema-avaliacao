@@ -1,12 +1,12 @@
-// frontend/src/components/charts/OeeGaugeChart.jsx
+
 import React from 'react';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
-// Função para determinar a cor com base no valor
+
 const getColor = (value) => {
-  if (value >= 85) return '#43aaa0'; // Verde (Mint)
-  if (value >= 70) return '#eca935'; // Amarelo (Orange)
-  return '#e42313'; // Vermelho (Tangerine Dark)
+  if (value >= 85) return '#43aaa0'; 
+  if (value >= 70) return '#eca935'; 
+  return '#e42313'; 
 };
 
 const OeeGaugeChart = ({ value, title }) => {
@@ -34,7 +34,7 @@ const OeeGaugeChart = ({ value, title }) => {
             background
             dataKey="value"
             angleAxisId={0}
-            fill={color} // A cor agora é dinâmica
+            fill={color} 
             cornerRadius={15}
           />
           <text
@@ -44,7 +44,7 @@ const OeeGaugeChart = ({ value, title }) => {
             dominantBaseline="middle"
             fontSize="3rem"
             fontWeight="bold"
-            fill={color} // A cor do texto também é dinâmica
+            fill={color} 
           >
             {`${value.toFixed(1)}%`}
           </text>
