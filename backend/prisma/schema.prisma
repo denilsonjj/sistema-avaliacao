@@ -76,11 +76,7 @@ model Evaluation {
   teamwork_score                 Int
   commitment_score               Int
   proactivity_score              Int
-
-  // Indicadores OEE (%)
-  availability Float
-  performance  Float
-  quality      Float
+  efficiency                     Float
 }
 
 model SelfAssessment {

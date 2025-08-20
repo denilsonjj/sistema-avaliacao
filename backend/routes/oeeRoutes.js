@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const oeeController = require('../controllers/oeeController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { getOeeOverviewForAllLines, getOeeDataForUser, exportOeeOverview } = require('../controllers/oeeController');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
+router.get('/overview-all-lines', protect, authorize('PMM', 'LÍDER'), getOeeOverviewForAllLines);
+router.get('/user/:userId', protect, getOeeDataForUser);
+router.get('/export', protect, authorize('PMM'), exportOeeOverview);
 
-router.get('/user/:userId', authMiddleware, oeeController.getOeeForUser);
-// Adicionar em backend/routes/oeeRoutes.js
-router.get('/lines/overview', authMiddleware, oeeController.getOeeOverviewForAllLines);
-
-router.get('/lines/overview/export', authMiddleware, oeeController.exportOeeOverview);
 module.exports = router;

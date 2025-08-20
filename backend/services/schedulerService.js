@@ -1,12 +1,12 @@
 const cron = require('node-cron');
 const { PrismaClient } = require('@prisma/client');
-const { calculatePerformance, calculateAvailability, calculateQuality } = require('./productionDbService');
+const { calculateEfficiency } = require('./productionDbService');
 
 const prisma = new PrismaClient();
 const shiftMap = { 1: 2, 2: 3, 3: 1 };
 
 const updateOeeData = async () => {
-    console.log('--- Iniciando tarefa agendada: Atualização de dados de OEE ---');
+    console.log('--- Iniciando tarefa agendada: Atualização de dados de EFICIÊNCIA ---');
     
     const allLines = await prisma.productionLine.findMany();
     if (allLines.length === 0) {
@@ -14,63 +14,53 @@ const updateOeeData = async () => {
         return;
     }
 
-    const newOeeResults = [];
+    const newEfficiencyResults = [];
     let hasFailed = false;
 
-    // 1. Limpa a tabela de staging
     await prisma.stagingOeeResult.deleteMany({});
     console.log('Tabela de staging limpa.');
 
-    // 2. Calcula os novos dados e armazena em memória
     for (const line of allLines) {
         for (const shift of [1, 2, 3]) {
             const lineDesc = line.name;
             const shiftId = shiftMap[shift];
             try {
-                const performanceResult = await calculatePerformance(lineDesc, shiftId);
-                const availabilityResult = await calculateAvailability(lineDesc, shiftId);
-                const qualityResult = await calculateQuality(lineDesc, shiftId); 
-
-                const availability = availabilityResult.availability || 0;
-                const performance = performanceResult.performance || 0;
-                const quality = qualityResult.quality || 0;
-                const oee = (availability / 100) * (performance / 100) * (quality / 100);
+                const efficiencyResult = await calculateEfficiency(lineDesc, shiftId);
+                const efficiency = efficiencyResult.efficiency || 0;
 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                newOeeResults.push({
+                newEfficiencyResults.push({
                     date: today,
                     lineDesc,
                     shift,
-                    availability,
-                    performance,
-                    quality,
-                    oee: parseFloat((oee * 100).toFixed(2)),
+                    // Preenchemos os campos para manter a estrutura do BD
+                    availability: 100, // Valor fixo
+                    performance: efficiency, // Eficiência vai aqui
+                    quality: 100, // Valor fixo
+                    oee: efficiency, // E a eficiência final também vai aqui
                 });
             } catch (error) {
                 console.error(`!!! FALHA CRÍTICA ao processar dados para ${lineDesc} - Turno ${shift}:`, error.message);
-                hasFailed = true; // Marca que houve uma falha
-                break; // Interrompe o processamento para esta linha
+                hasFailed = true;
+                break;
             }
         }
-        if (hasFailed) break; // Interrompe o loop principal se uma linha falhou
+        if (hasFailed) break;
     }
 
-    // 3. Se todos os dados foram calculados com sucesso, atualiza a tabela principal
-    if (!hasFailed && newOeeResults.length > 0) {
+    if (!hasFailed && newEfficiencyResults.length > 0) {
         try {
-            console.log(`Todos os ${newOeeResults.length} registros foram calculados. Iniciando transação...`);
+            console.log(`Todos os ${newEfficiencyResults.length} registros foram calculados. Iniciando transação...`);
             
-           
             await prisma.stagingOeeResult.createMany({
-                data: newOeeResults
+                data: newEfficiencyResults
             });
 
-         
             await prisma.$transaction(async (tx) => {
-                await tx.dailyOeeResult.deleteMany({}); // Limpa a tabela principal
-                const stagingData = await tx.stagingOeeResult.findMany(); // Lê da staging
+                await tx.dailyOeeResult.deleteMany({});
+                const stagingData = await tx.stagingOeeResult.findMany();
                 await tx.dailyOeeResult.createMany({ data: stagingData }); 
             });
 
@@ -81,18 +71,20 @@ const updateOeeData = async () => {
     } else if (hasFailed) {
         console.log('--- Tarefa agendada abortada devido a erros. A tabela principal não foi alterada. ---');
     } else {
-        console.log('Nenhum novo dado de OEE para atualizar.');
+        console.log('Nenhum novo dado de eficiência para atualizar.');
     }
 
     console.log('--- Tarefa agendada finalizada ---');
 };
 
 const startScheduler = () => {
+    // Roda todo dia às 09:35
     cron.schedule('35 9 * * *', updateOeeData, {
         scheduled: true,
         timezone: "America/Sao_Paulo"
     });
-    setTimeout(updateOeeData, 1000); // Executa imediatamente após iniciar o agendador   
+    // Executa uma vez ao iniciar para testes
+    setTimeout(updateOeeData, 2000); 
     console.log('Agendador de tarefas iniciado. A tarefa rodará todos os dias às 09:35.');
 };
 

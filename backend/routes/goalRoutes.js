@@ -1,11 +1,10 @@
-// backend/routes/goalRoutes.js
 const express = require('express');
 const router = express.Router();
-const goalController = require('../controllers/goalController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { createGoal, getGoalsByUserId, updateGoalStatus } = require('../controllers/goalController');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
-router.post('/', authMiddleware, goalController.createGoal);
-router.get('/user/:userId', authMiddleware, goalController.getGoalsForUser);
-router.put('/:id/status', authMiddleware, goalController.updateGoalStatus);
+router.post('/', protect, authorize('PMM', 'LÍDER'), createGoal);
+router.get('/user/:userId', protect, getGoalsByUserId);
+router.put('/:id', protect, updateGoalStatus);
 
 module.exports = router;

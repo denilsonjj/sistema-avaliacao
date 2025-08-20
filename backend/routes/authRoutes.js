@@ -1,15 +1,16 @@
-// backend/routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { registerUser, loginUser, getMe, getAllUsers, updateUser, deleteUser, getUserById, updateUserProfile } = require('../controllers/authController');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.get('/users', authMiddleware, authController.getAllUsers);
-router.get('/users/:id', authMiddleware, authController.getUserById);
-router.delete('/users/:id', authMiddleware, authController.deleteUser);
-router.put('/profile', authMiddleware, authController.updateUserProfile);
-router.get('/users/stats/by-role', authMiddleware, authController.getUserStatsByRole);
-router.get('/users/export', authMiddleware, authController.exportUsers);
+router.post('/register', registerUser);
+router.post('/login', loginUser);
+router.get('/me', protect, getMe);
+router.put('/profile', protect, updateUserProfile);
+router.get('/users', protect, authorize('PMM', 'LÍDER'), getAllUsers);
+router.route('/users/:id')
+    .get(protect, authorize('PMM', 'LÍDER'), getUserById)
+    .put(protect, authorize('PMM'), updateUser)
+    .delete(protect, authorize('PMM'), deleteUser);
+
 module.exports = router;

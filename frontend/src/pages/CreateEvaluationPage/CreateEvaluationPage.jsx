@@ -56,9 +56,7 @@ function CreateEvaluationPage() {
     teamwork_score: 3,
     commitment_score: 3,
     proactivity_score: 3,
-    availability: 90,
-    performance: 90,
-    quality: 90,
+    eficiency:90
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -150,20 +148,10 @@ function CreateEvaluationPage() {
           </div>
         </Card>
 
-        <Card title="Indicadores de OEE (%)">
-            <div className={styles.scoreGrid}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="availability">Disponibilidade (A):</label>
-                    <input type="number" id="availability" name="availability" value={formData.availability} onChange={handleChange} required />
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="performance">Performance (P):</label>
-                    <input type="number" id="performance" name="performance" value={formData.performance} onChange={handleChange} required />
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="quality">Qualidade (Q):</label>
-                    <input type="number" id="quality" name="quality" value={formData.quality} onChange={handleChange} required />
-                </div>
+        <Card title="Indicador de Eficiência (%)">
+            <div className={styles.formGroup}>
+                <label htmlFor="efficiency">Eficiência (Avaliação Manual):</label>
+                <input type="number" id="efficiency" name="efficiency" value={formData.efficiency} onChange={handleChange} required min="0" max="200" />
             </div>
         </Card>
         

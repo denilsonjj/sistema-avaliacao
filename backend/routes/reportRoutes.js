@@ -1,10 +1,8 @@
-// backend/routes/reportRoutes.js
 const express = require('express');
 const router = express.Router();
-const reportController = require('../controllers/reportController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { exportReport } = require('../controllers/reportController');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
-router.get('/evaluations-over-time', authMiddleware, reportController.getEvaluationsOverTime);
-router.get('/export/evaluations', authMiddleware, reportController.exportEvaluations);
+router.get('/export/:type', protect, authorize('PMM'), exportReport);
 
 module.exports = router;

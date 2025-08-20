@@ -1,94 +1,105 @@
 import React, { useState, useEffect } from 'react';
+import { FaFileExcel, FaChartBar, FaUsers } from 'react-icons/fa';
 import api from '../../services/api';
 import Card from '../../components/Card/Card';
-import EvaluationsLineChart from '../../components/charts/EvaluationsLineChart';
 import styles from './ReportsPage.module.css';
-import { FaFileExcel } from 'react-icons/fa'; // Importar ícone
+import EvaluationsLineChart from '../../components/charts/EvaluationsLineChart';
+import OeeBarChart from '../../components/charts/OeeBarChart'; 
 
 function ReportsPage() {
-  const [evaluationsData, setEvaluationsData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState({ evaluations: false, users: false, oee: false });
+  const [downloading, setDownloading] = useState({
+    evaluations: false,
+    users: false,
+    oee: false,
+  });
+  const [chartData, setChartData] = useState({ evaluations: [], oee: [] });
+  const [loadingCharts, setLoadingCharts] = useState(true);
 
   useEffect(() => {
-    const fetchReports = async () => {
+    const fetchChartData = async () => {
       try {
-        const res = await api.get('/reports/evaluations-over-time');
-        setEvaluationsData(res.data);
+        // Renomeado o endpoint de 'oee' para 'efficiency' para clareza, mas a rota no backend é /oee
+        const [evalRes, efficiencyRes] = await Promise.all([
+          api.get('/evaluations'),
+          api.get('/oee/overview-all-lines') 
+        ]);
+
+        const evaluationsWithDate = evalRes.data.map(e => ({
+            ...e,
+            date: new Date(e.createdAt).toLocaleDateString()
+        }));
+        
+        setChartData({ evaluations: evaluationsWithDate, oee: efficiencyRes.data });
       } catch (error) {
-        console.error("Erro ao buscar dados do relatório:", error);
+        console.error("Erro ao buscar dados para os gráficos:", error);
       } finally {
-        setLoading(false);
+        setLoadingCharts(false);
       }
     };
-    fetchReports();
+
+    fetchChartData();
   }, []);
 
   const handleDownload = async (reportType) => {
     setDownloading(prev => ({ ...prev, [reportType]: true }));
-    
-    const endpoints = {
-      evaluations: '/reports/export/evaluations',
-      users: '/auth/users/export',
-      oee: '/oee/lines/overview/export'
-    };
-    
-    const filenames = {
-      evaluations: 'Relatorio_Avaliacoes.xlsx',
-      users: 'Relatorio_Usuarios.xlsx',
-      oee: 'Relatorio_OEE_Planta.xlsx'
-    };
-
     try {
-      const response = await api.get(endpoints[reportType], {
-        responseType: 'blob',
+      const response = await api.get(`/reports/export/${reportType}`, {
+        responseType: 'blob', // Importante para o download de arquivos
       });
+
+      // Mapeamento de nomes de arquivos, atualizado para "Eficiência"
+      const filenames = {
+        evaluations: 'Relatorio_Completo_Avaliacoes.xlsx',
+        users: 'Relatorio_Usuarios_Cadastrados.xlsx',
+        oee: 'Relatorio_Eficiencia_Planta.xlsx' 
+      };
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', filenames[reportType]);
-      
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      link.parentNode.removeChild(link);
+
     } catch (error) {
       console.error(`Erro ao baixar o relatório de ${reportType}:`, error);
-      alert(`Não foi possível baixar o relatório de ${reportType}.`);
+      alert(`Falha ao gerar o relatório. Tente novamente.`);
     } finally {
       setDownloading(prev => ({ ...prev, [reportType]: false }));
     }
   };
 
-  if (loading) return <p>Gerando relatórios...</p>;
-
   return (
     <div className={styles.container}>
-      <h1>Relatórios e Exportações</h1>
-      <p>Análise de dados e extração de informações do sistema.</p>
+      <h1>Relatórios e Análises</h1>
+      <p>Extraia dados consolidados e visualize tendências de desempenho do sistema.</p>
 
-      {/* Seção de Exportação */}
-      <Card title="Exportar Dados para Excel">
+      <Card title="Exportar Dados Consolidados para Excel">
         <div className={styles.exportGrid}>
           <button onClick={() => handleDownload('evaluations')} className={styles.downloadButton} disabled={downloading.evaluations}>
-            <FaFileExcel /> {downloading.evaluations ? 'Baixando...' : 'Exportar Avaliações'}
+            <FaUsers /> {downloading.evaluations ? 'Gerando...' : 'Exportar Avaliações'}
           </button>
+          
           <button onClick={() => handleDownload('users')} className={styles.downloadButton} disabled={downloading.users}>
-            <FaFileExcel /> {downloading.users ? 'Baixando...' : 'Exportar Usuários'}
+            <FaUsers /> {downloading.users ? 'Gerando...' : 'Exportar Usuários'}
           </button>
+
+          {/* Botão e texto atualizados para Eficiência */}
           <button onClick={() => handleDownload('oee')} className={styles.downloadButton} disabled={downloading.oee}>
-            <FaFileExcel /> {downloading.oee ? 'Baixando...' : 'Exportar OEE da Planta'}
+            <FaFileExcel /> {downloading.oee ? 'Gerando...' : 'Exportar Eficiência da Planta'}
           </button>
         </div>
       </Card>
 
-      <div className={styles.reportCard}>
-        <Card title="Volume de Avaliações ao Longo do Tempo">
-          {evaluationsData.length > 0 ? (
-            <EvaluationsLineChart data={evaluationsData} />
-          ) : (
-            <p>Não há dados suficientes para gerar este relatório.</p>
-          )}
+      <div className={styles.chartsGrid}>
+        <Card title="Evolução das Avaliações">
+          {loadingCharts ? <p>Carregando gráfico...</p> : <EvaluationsLineChart data={chartData.evaluations} />}
+        </Card>
+        
+        {/* Gráfico e título atualizados para Eficiência */}
+        <Card title="Média de Eficiência por Linha">
+          {loadingCharts ? <p>Carregando gráfico...</p> : <OeeBarChart data={chartData.oee} />}
         </Card>
       </div>
     </div>

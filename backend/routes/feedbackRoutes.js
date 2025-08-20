@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const feedbackController = require('../controllers/feedbackController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { createFeedback, getReceivedFeedback } = require('../controllers/feedbackController');
+const { protect } = require('../middleware/authMiddleware');
 
-router.post('/', authMiddleware, feedbackController.createFeedback);
-router.get('/user/:userId', authMiddleware, feedbackController.getFeedbacksForUser);
+router.post('/', protect, createFeedback);
+router.get('/received', protect, getReceivedFeedback);
 
 module.exports = router;

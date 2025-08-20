@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const selfAssessmentController = require('../controllers/selfAssessmentController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { upsertSelfAssessment, getSelfAssessment } = require('../controllers/selfAssessmentController');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
-router.get('/user/:userId', authMiddleware, selfAssessmentController.getSelfAssessment);
-router.post('/user/:userId', authMiddleware, selfAssessmentController.createOrUpdateSelfAssessment);
+router.post('/', protect, upsertSelfAssessment);
+router.get('/', protect, getSelfAssessment);
+router.get('/:userId', protect, authorize('PMM', 'LÍDER'), getSelfAssessment);
 
 module.exports = router;

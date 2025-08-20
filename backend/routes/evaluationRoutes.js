@@ -1,19 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const evaluationController = require('../controllers/evaluationController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { createEvaluation, getAllEvaluations, getEvaluationsByUserId } = require('../controllers/evaluationController');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
-// Rotas existentes
-router.get('/stats', authMiddleware, evaluationController.getSystemStats);
-router.get('/charts/oee-by-user', authMiddleware, evaluationController.getOEEByUser);
-router.get('/user/:userId', authMiddleware, evaluationController.getEvaluationsByUser);
-router.post('/user/:userId', authMiddleware, evaluationController.createEvaluation);
-
-// --- NOVAS ROTAS PARA EDIÇÃO ---
-router.get('/:id', authMiddleware, evaluationController.getEvaluationById);
-router.put('/:id', authMiddleware, evaluationController.updateEvaluation);
-
-//excluir
-router.delete('/:id', authMiddleware, evaluationController.deleteEvaluation); 
+router.get('/', protect, authorize('PMM', 'LÍDER'), getAllEvaluations);
+router.post('/', protect, authorize('PMM', 'LÍDER'), createEvaluation);
+router.get('/user/:userId', protect, getEvaluationsByUserId);
 
 module.exports = router;

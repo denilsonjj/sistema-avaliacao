@@ -79,8 +79,8 @@ function PmmDashboardPage() {
   if (loading) return <p>Carregando dados globais...</p>;
   if (error) return <p className={styles.error}>{error}</p>;
 
-  const overallAverageOee = oeeOverview.length > 0
-    ? oeeOverview.reduce((sum, line) => sum + line.oee, 0) / oeeOverview.length
+  const overallAverageEfficiency = oeeOverview.length > 0
+    ? oeeOverview.reduce((sum, line) => sum + line.Eficiencia, 0) / oeeOverview.length
     : 0;
 
   return (
@@ -89,8 +89,8 @@ function PmmDashboardPage() {
       <p>Acesso total aos dados e KPIs de produção do sistema.</p>
       
       <div className={styles.kpiGrid}>
-        <Card title="OEE Geral">
-          <OeeGaugeChart value={overallAverageOee} />
+        <Card title="Eficiência Geral da Planta">
+          <OeeGaugeChart value={overallAverageEfficiency} />
         </Card>
         
         <Card title="Usuários Cadastrados">
