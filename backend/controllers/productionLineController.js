@@ -1,8 +1,6 @@
-// backend/controllers/productionLineController.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Lista todas as linhas de produção cadastradas
 exports.getAllLines = async (req, res) => {
     try {
         const lines = await prisma.productionLine.findMany({

@@ -62,16 +62,16 @@ const updateOeeData = async () => {
         try {
             console.log(`Todos os ${newOeeResults.length} registros foram calculados. Iniciando transação...`);
             
-            // Salva primeiro na tabela de staging
+           
             await prisma.stagingOeeResult.createMany({
                 data: newOeeResults
             });
 
-            // Inicia a transação atômica para atualizar a tabela principal
+         
             await prisma.$transaction(async (tx) => {
                 await tx.dailyOeeResult.deleteMany({}); // Limpa a tabela principal
                 const stagingData = await tx.stagingOeeResult.findMany(); // Lê da staging
-                await tx.dailyOeeResult.createMany({ data: stagingData }); // Copia para a principal
+                await tx.dailyOeeResult.createMany({ data: stagingData }); 
             });
 
             console.log('*** SUCESSO: Tabela DailyOeeResult foi atualizada atomicamente. ***');
@@ -92,6 +92,7 @@ const startScheduler = () => {
         scheduled: true,
         timezone: "America/Sao_Paulo"
     });
+    setTimeout(updateOeeData, 1000); // Executa imediatamente após iniciar o agendador   
     console.log('Agendador de tarefas iniciado. A tarefa rodará todos os dias às 09:35.');
 };
 

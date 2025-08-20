@@ -1,213 +1,108 @@
-// backend/services/productionDbService.js
 const sql = require('mssql');
+require('dotenv').config();
 
-const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-    requestTimeout: 30000
-  }
+// Configuração da conexão com o banco de dados de produção (MS SQL Server)
+// As credenciais são lidas do arquivo .env
+const dbConfig = {
+    user: process.env.PROD_DB_USER,
+    password: process.env.PROD_DB_PASSWORD,
+    server: process.env.PROD_DB_SERVER,
+    database: process.env.PROD_DB_DATABASE,
+    options: {
+        encrypt: process.env.PROD_DB_ENCRYPT === 'true', // Use true para Azure SQL Database, false para instâncias locais
+        trustServerCertificate: process.env.PROD_DB_TRUST_SERVER_CERTIFICATE === 'true' // Altere para true para desenvolvimento local
+    }
 };
 
-// Função para criar e fechar a conexão de forma segura
+// Mantém um pool de conexões para reutilização e melhor performance
+let poolPromise = null;
+
 async function getConnectedPool() {
-  try {
-    const pool = await sql.connect(config);
-    return pool;
-  } catch (err) {
-    // Erro detalhado de conexão
-    console.error("======================================================");
-    console.error("FALHA CRÍTICA NA CONEXÃO COM O SQL SERVER:", err.message);
-    console.error("Verifique as credenciais no arquivo .env, a conexão de rede (VPN, Firewall) e o status do servidor de banco de dados.");
-    console.error("======================================================");
-    // Lança o erro para que a função que chamou saiba que falhou
-    throw new Error(`Falha na conexão com o SQL Server: ${err.message}`);
-  }
+    if (poolPromise) {
+        return poolPromise;
+    }
+    poolPromise = new sql.ConnectionPool(dbConfig)
+        .connect()
+        .then(pool => {
+            console.log('Conectado ao Banco de Dados de Produção (MSSQL)');
+            return pool;
+        })
+        .catch(err => {
+            console.error('Falha na conexão com o Banco de Dados de Produção:', err);
+            poolPromise = null; // Reseta a promise em caso de erro para permitir nova tentativa
+            throw err;
+        });
+    return poolPromise;
 }
 
-
-// função testConnection
+/**
+ * Testa a conexão com o banco de dados de produção.
+ */
 async function testConnection() {
-  try {
-    console.log("Tentando conectar ao SQL Server da fábrica...");
-    let pool = await getConnectedPool();
-    console.log("Conexão com o SQL Server da fábrica bem-sucedida!");
-    await pool.close();
-    return { success: true, message: 'Conexão bem-sucedida!' };
-  } catch (err) {
-    return { success: false, message: 'Falha na conexão.', error: err.message };
-  }
+    try {
+        const pool = await getConnectedPool();
+        // A conexão bem-sucedida já é um teste.
+        return { success: true, message: 'Conexão com o banco de dados de produção bem-sucedida.' };
+    } catch (err) {
+        return { success: false, message: 'Falha ao conectar com o banco de dados de produção.', error: err.message };
+    }
 }
 
-
-// função getProductionSummary para testes
-async function getProductionSummary() {
-  try {
-    let pool = await getConnectedPool();
-    let result = await pool.request().query('SELECT TOP 100 * FROM vw_Resumo_prod_Montagem');
-    await pool.close();
-    
-    console.log("Top 100 dados da produção buscados com sucesso!");
-    return { success: true, data: result.recordset };
-
-  } catch (err) {
-    console.error("Erro ao buscar dados da produção:", err);
-    return { success: false, message: 'Falha ao buscar dados da produção.', error: err.message };
-  }
-}
-
-async function calculatePerformance(lineDescription, shiftId) {
-    const viewName = 'vw_Resumo_prod_Montagem'; 
+/**
+ * Calcula a EFICIÊNCIA para uma linha e turno específicos.
+ * Esta é a única métrica de produção que será calculada.
+ */
+async function calculateEfficiency(lineDescription, shiftId) {
+    const viewName = 'vw_Resumo_prod_Montagem'; // Nome da sua view ou tabela
     let pool;
     try {
-      pool = await getConnectedPool();
-      const request = pool.request();
+        pool = await getConnectedPool();
+        const request = pool.request();
       
-      request.input('line', sql.VarChar, lineDescription); 
-      request.input('shift', sql.Int, shiftId);
+        request.input('line', sql.VarChar, lineDescription); 
+        request.input('shift', sql.Int, shiftId);
   
-      let result = await request.query(`
-        SELECT TOP 1 TargProd, effectiveProd 
-        FROM ${viewName}
-        WHERE LineDesc = @line AND ShiftId = @shift
-        ORDER BY EffectiveDate DESC
-      `);
+        // Esta é a sua nova consulta para buscar produção alvo e efetiva
+        const result = await request.query(`
+            SELECT TOP 1 TargProd, effectiveProd 
+            FROM ${viewName}
+            WHERE 
+                LineDesc = @line AND 
+                ShiftId = @shift AND
+                (LineDesc IN ('CHASSIS 4', 'CHASSIS1', 'CHASSIS2', 'CHASSIS3', 'CHASSIS5', 'DECKING DOWN', 'DECKING UP', 'FINAL1', 'FINAL2', 'GLAZING', 'GOMA', 'GOMP', 'TRIM 0', 'TRIM 1', 'TRIM 2')) AND
+                (EffectiveDate NOT IN ('2025-02-28', '2025-03-01', '2025-03-02', '2025-03-03', '2025-03-04', '2025-03-05', '2025-03-06', '2025-03-07', '2025-03-08', '2025-03-09', '2025-03-10', '2025-05-01')) AND
+                (EffectiveProd NOT IN (0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+            ORDER BY EffectiveDate DESC
+        `);
       
-      if (result.recordset.length === 0) {
-        console.warn(`Nenhum dado encontrado para a linha: ${lineDescription} e turno: ${shiftId}`);
-        return { success: true, performance: 0 };
-      }
+        if (result.recordset.length === 0) {
+            console.warn(`Nenhum dado de produção encontrado para Linha: ${lineDescription}, Turno: ${shiftId}`);
+            return { success: true, efficiency: 0 };
+        }
   
-      const data = result.recordset[0];
-      const target = data.TargProd;
-      const effective = data.effectiveProd;
+        const data = result.recordset[0];
+        const target = data.TargProd;
+        const effective = data.effectiveProd;
   
-      if (target === 0) {
-        return { success: true, performance: 0 };
-      }
+        // Evita divisão por zero se a meta for 0
+        if (target === 0) {
+            return { success: true, efficiency: 0 };
+        }
   
-      const performance = (effective / target) * 100;
-      return { success: true, performance: parseFloat(performance.toFixed(2)) };
+        const efficiency = (effective / target) * 100;
+        return { success: true, efficiency: parseFloat(efficiency.toFixed(2)) };
   
     } catch (err) {
-      console.error(`Erro ao calcular performance para ${lineDescription}, Turno ${shiftId}:`, err.message);
-      return { success: false, message: 'Falha ao calcular performance.', error: err.message };
-    } finally {
-        if (pool) {
-            await pool.close();
-        }
+        console.error(`Erro ao calcular eficiência para ${lineDescription}, Turno ${shiftId}:`, err.message);
+        return { success: false, message: 'Falha ao calcular eficiência.', error: err.message };
     }
-  }
-
-  async function calculateAvailability(lineDescription, shiftId) {
-    const viewName = 'vw_Lista_Estados_Montagem'; 
-    let pool;
-    try {
-      pool = await getConnectedPool();
-      const request = pool.request();
-      
-      request.input('line', sql.VarChar, lineDescription); 
-      request.input('shift', sql.Int, shiftId);
-  
-      let result = await request.query(`
-        SELECT
-          SUM(CASE WHEN StatusDesc IN (
-            'Bypass', 'Mensagem de guia', 'Produção', 'Team Leader Alert',
-            'degradado', 'impossivel carregar', 'impossivel descarregar'
-          ) THEN duration ELSE 0 END) as productiveHours,
-          
-          SUM(CASE WHEN StatusDesc IN (
-            'Falha/Parada', 'Falta carregamento', 'Falta descarregamento', 'Manual'
-          ) THEN duration ELSE 0 END) as unproductiveHours
-        FROM ${viewName}
-        WHERE LineDesc = @line 
-          AND ShiftId = @shift
-          AND EffectiveDay = (
-            SELECT MAX(EffectiveDay) FROM ${viewName} WHERE LineDesc = @line AND ShiftId = @shift
-          )
-      `);
-      
-      if (result.recordset.length === 0) {
-        throw new Error('Nenhum dado de estados encontrado para a linha e turno especificados.');
-      }
-  
-      const data = result.recordset[0];
-      const productiveHours = data.productiveHours || 0;
-      const unproductiveHours = data.unproductiveHours || 0;
-      const totalTime = productiveHours + unproductiveHours;
-  
-      if (totalTime === 0) {
-        return { success: true, availability: 0 };
-      }
-  
-      const availability = (productiveHours / totalTime) * 100;
-      return { success: true, availability: parseFloat(availability.toFixed(2)) };
-  
-    } catch (err) {
-      console.error(`Erro ao calcular disponibilidade para ${lineDescription}, Turno ${shiftId}:`, err.message);
-      return { success: false, message: 'Falha ao calcular disponibilidade.', error: err.message };
-    } finally {
-        if (pool) {
-            await pool.close();
-        }
-    }
-  }
-
-async function calculateQuality(lineDescription, shiftId) {
-  const viewName = 'vw_Lista_Estados_Montagem'; 
-  let pool;
-  try {
-      pool = await getConnectedPool();
-      const request = pool.request();
-      
-      request.input('line', sql.VarChar, lineDescription); 
-      request.input('shift', sql.Int, shiftId);
-
-      let result = await request.query(`
-          SELECT
-              SUM(CASE WHEN StatusDesc IN (
-                  'Bypass', 'Mensagem de guia', 'Produção', 'Team Leader Alert',
-                  'degradado', 'impossivel carregar', 'impossivel descarregar'
-              ) THEN duration ELSE 0 END) as productiveHours,
-              
-              SUM(CASE WHEN StatusDesc IN (
-                  'Anomalia de Qualidade'
-              ) THEN duration ELSE 0 END) as qualityLossesTime
-          FROM ${viewName}
-          WHERE LineDesc = @line 
-              AND ShiftId = @shift
-              AND EffectiveDay = (
-                  SELECT MAX(EffectiveDay) FROM ${viewName} WHERE LineDesc = @line AND ShiftId = @shift
-              )
-      `);
-
-      if (result.recordset.length === 0) {
-          throw new Error('Nenhum dado de estados encontrado para a linha e turno especificados.');
-      }
-
-      const data = result.recordset[0];
-      const productiveTime = data.productiveHours || 0;
-      const qualityLossTime = data.qualityLossesTime || 0;
-      
-      if (productiveTime === 0) {
-          return { success: true, quality: 100 }; 
-      }
-      
-      const quality = ((productiveTime - qualityLossTime) / productiveTime) * 100;
-      return { success: true, quality: parseFloat(quality.toFixed(2)) }; 
-
-  } catch (err) {
-      console.error(`Erro ao calcular Qualidade para ${lineDescription}, Turno ${shiftId}:`, err.message);
-      return { success: false, message: 'Falha ao calcular qualidade.', error: err.message };
-  } finally {
-      if (pool) {
-          await pool.close();
-      }
-  }
+    // A gestão do pool é feita pela promise, não fechamos a conexão aqui para que possa ser reutilizada
 }
 
-module.exports = { testConnection, getProductionSummary, calculatePerformance, calculateAvailability, calculateQuality }
+
+// As funções calculateAvailability e calculateQuality foram removidas.
+
+module.exports = { 
+    testConnection, 
+    calculateEfficiency // Exporta apenas as funções necessárias
+};
